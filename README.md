@@ -85,34 +85,35 @@ Each rail returns one of three decisions:
 
 ### Option 1 — JitPack (recommended, no local build needed)
 
-Add JitPack to your repositories and declare the dependency:
-
 **Gradle (Kotlin DSL):**
 
+Step 1 — add JitPack to `settings.gradle.kts`:
+
 ```kotlin
-// settings.gradle.kts
 dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
+        mavenCentral()
         maven { url = uri("https://jitpack.io") }
     }
 }
 ```
 
+Step 2 — add dependencies to `build.gradle.kts`:
+
 ```kotlin
-// build.gradle.kts
 dependencies {
     // Core + built-in detectors (required)
-    implementation("com.github.Ratila1.JGuardrails:jguardrails-core:master-SNAPSHOT")
-    implementation("com.github.Ratila1.JGuardrails:jguardrails-detectors:master-SNAPSHOT")
+    implementation("com.github.Ratila1:JGuardrails:v0.1.0")
 
     // Spring AI adapter (optional)
-    implementation("com.github.Ratila1.JGuardrails:jguardrails-spring-ai:master-SNAPSHOT")
+    implementation("com.github.Ratila1.JGuardrails:jguardrails-spring-ai:v0.1.0")
 
     // LangChain4j adapter (optional)
-    implementation("com.github.Ratila1.JGuardrails:jguardrails-langchain4j:master-SNAPSHOT")
+    implementation("com.github.Ratila1.JGuardrails:jguardrails-langchain4j:v0.1.0")
 
     // LLM-as-judge support (optional)
-    implementation("com.github.Ratila1.JGuardrails:jguardrails-llm:master-SNAPSHOT")
+    implementation("com.github.Ratila1.JGuardrails:jguardrails-llm:v0.1.0")
 }
 ```
 
@@ -121,7 +122,9 @@ dependencies {
 ```groovy
 // settings.gradle
 dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
+        mavenCentral()
         maven { url 'https://jitpack.io' }
     }
 }
@@ -130,8 +133,7 @@ dependencyResolutionManagement {
 ```groovy
 // build.gradle
 dependencies {
-    implementation 'com.github.Ratila1.JGuardrails:jguardrails-core:master-SNAPSHOT'
-    implementation 'com.github.Ratila1.JGuardrails:jguardrails-detectors:master-SNAPSHOT'
+    implementation 'com.github.Ratila1:JGuardrails:v0.1.0'
 }
 ```
 
@@ -148,19 +150,14 @@ dependencies {
 
 <dependencies>
     <dependency>
-        <groupId>com.github.Ratila1.JGuardrails</groupId>
-        <artifactId>jguardrails-core</artifactId>
-        <version>master-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-        <groupId>com.github.Ratila1.JGuardrails</groupId>
-        <artifactId>jguardrails-detectors</artifactId>
-        <version>master-SNAPSHOT</version>
+        <groupId>com.github.Ratila1</groupId>
+        <artifactId>JGuardrails</artifactId>
+        <version>v0.1.0</version>
     </dependency>
 </dependencies>
 ```
 
-> **Tip:** replace `master-SNAPSHOT` with a specific Git tag (e.g., `v0.1.0`) or commit hash for reproducible builds.
+> **Tip:** replace `v0.1.0` with `master-SNAPSHOT` to always get the latest build from the master branch.
 
 ### Option 2 — Build from source
 
@@ -179,8 +176,8 @@ repositories {
 }
 
 dependencies {
-    implementation("io.jguardrails:jguardrails-core:0.1.0-SNAPSHOT")
-    implementation("io.jguardrails:jguardrails-detectors:0.1.0-SNAPSHOT")
+    implementation("io.jguardrails:jguardrails-core:0.1.0")
+    implementation("io.jguardrails:jguardrails-detectors:0.1.0")
 }
 ```
 
@@ -592,7 +589,7 @@ GuardrailConfig config = YamlConfigLoader.loadFromStream(inputStream);
 ### Dependency
 
 ```kotlin
-implementation("com.github.Ratila1.JGuardrails:jguardrails-spring-ai:master-SNAPSHOT")
+implementation("com.github.Ratila1.JGuardrails:jguardrails-spring-ai:v0.1.0")
 ```
 
 ### Option 1 — Auto-configuration (recommended)
@@ -664,7 +661,7 @@ public class ChatService {
 ### Dependency
 
 ```kotlin
-implementation("com.github.Ratila1.JGuardrails:jguardrails-langchain4j:master-SNAPSHOT")
+implementation("com.github.Ratila1.JGuardrails:jguardrails-langchain4j:v0.1.0")
 ```
 
 ### Option 1 — GuardrailChatModelFilter (transparent wrapper)
