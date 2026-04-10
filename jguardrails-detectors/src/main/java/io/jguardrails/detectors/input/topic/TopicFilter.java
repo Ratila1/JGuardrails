@@ -47,26 +47,155 @@ public class TopicFilter implements InputRail {
 
     static {
         Map<String, List<String>> topics = new HashMap<>();
-        topics.put("politics", List.of("politics", "political", "election", "elections", "vote", "voting",
+        topics.put("politics", List.of(
+                // English
+                "politics", "political", "election", "elections", "vote", "voting",
                 "parliament", "congress", "senate", "president", "prime minister", "government", "party",
-                "candidate", "democrat", "republican", "политика", "выборы", "партия", "правительство"));
-        topics.put("religion", List.of("religion", "religious", "god", "gods", "allah", "jesus", "christ",
+                "candidate", "democrat", "republican",
+                // Russian
+                "политика", "выборы", "партия", "правительство", "президент", "парламент", "голосование",
+                // French
+                "politique", "élection", "élections", "voter", "parlement", "sénat", "gouvernement", "parti",
+                "candidat", "président",
+                // German
+                "politik", "wahl", "wahlen", "abstimmung", "parlament", "regierung", "partei", "kandidat",
+                "präsident", "bundestag",
+                // Spanish
+                "política", "elección", "elecciones", "votar", "parlamento", "senado", "gobierno", "partido",
+                "candidato", "presidente",
+                // Polish
+                "polityka", "wybory", "głosowanie", "parlament", "sejm", "senat", "rząd", "partia",
+                "kandydat", "prezydent",
+                // Italian
+                "politica", "elezione", "elezioni", "votare", "parlamento", "senato", "governo", "partito",
+                "candidato", "presidente"));
+
+        topics.put("religion", List.of(
+                // English
+                "religion", "religious", "god", "gods", "allah", "jesus", "christ",
                 "bible", "quran", "torah", "prayer", "church", "mosque", "temple", "faith", "worship",
-                "религия", "бог", "молитва", "церковь", "мечеть", "храм"));
-        topics.put("violence", List.of("kill", "murder", "attack", "bomb", "explosion", "weapon", "gun",
-                "shoot", "stab", "assault", "terrorism", "terrorist", "убийство", "взрыв", "бомба",
-                "оружие", "нападение", "атака", "насилие"));
-        topics.put("adult", List.of("sex", "sexual", "porn", "pornography", "xxx", "erotic", "nude",
-                "naked", "nsfw", "adult content", "секс", "порно", "эротика"));
-        topics.put("drugs", List.of("drug", "drugs", "narcotic", "marijuana", "cannabis", "cocaine",
-                "heroin", "meth", "methamphetamine", "overdose", "наркотик", "марихуана", "кокаин",
-                "героин", "наркотики"));
-        topics.put("medical_advice", List.of("diagnosis", "prescribe", "prescription", "medication",
-                "dosage", "symptoms", "disease", "disorder", "treatment", "cure", "diagnose",
-                "диагноз", "лечение", "таблетки", "симптомы", "болезнь", "медикамент"));
-        topics.put("financial_advice", List.of("invest", "investment", "stock", "stocks", "trading",
-                "trade", "buy shares", "sell shares", "portfolio", "forex", "cryptocurrency",
-                "инвестировать", "акции", "трейдинг", "инвестиции", "криптовалюта"));
+                // Russian
+                "религия", "бог", "молитва", "церковь", "мечеть", "храм", "вера", "библия", "коран",
+                // French
+                "religion", "religieux", "dieu", "prière", "église", "mosquée", "temple", "foi", "culte",
+                "bible", "coran",
+                // German
+                "religion", "religiös", "gott", "gebet", "kirche", "moschee", "tempel", "glaube",
+                "bibel", "koran",
+                // Spanish
+                "religión", "religioso", "dios", "oración", "iglesia", "mezquita", "templo", "fe",
+                "biblia", "corán",
+                // Polish
+                "religia", "religijny", "bóg", "modlitwa", "kościół", "meczet", "świątynia", "wiara",
+                "biblia", "koran",
+                // Italian
+                "religione", "religioso", "dio", "preghiera", "chiesa", "moschea", "tempio", "fede",
+                "bibbia", "corano"));
+
+        topics.put("violence", List.of(
+                // English
+                "kill", "murder", "attack", "bomb", "explosion", "weapon", "gun",
+                "shoot", "stab", "assault", "terrorism", "terrorist",
+                // Russian
+                "убийство", "взрыв", "бомба", "оружие", "нападение", "атака", "насилие",
+                "террор", "терроризм", "застрелить", "убить",
+                // French
+                "tuer", "meurtre", "attaque", "bombe", "explosion", "arme", "fusil",
+                "tirer", "poignarder", "agression", "terrorisme", "terroriste",
+                // German
+                "töten", "mord", "angriff", "bombe", "explosion", "waffe", "schießen",
+                "stechen", "angriff", "terrorismus", "terrorist",
+                // Spanish
+                "matar", "asesinato", "ataque", "bomba", "explosión", "arma", "disparar",
+                "apuñalar", "agresión", "terrorismo", "terrorista",
+                // Polish
+                "zabić", "morderstwo", "atak", "bomba", "eksplozja", "broń", "strzelić",
+                "dźgnąć", "napaść", "terroryzm", "terrorysta",
+                // Italian
+                "uccidere", "omicidio", "attacco", "bomba", "esplosione", "arma", "sparare",
+                "pugnalare", "aggressione", "terrorismo", "terrorista"));
+
+        topics.put("adult", List.of(
+                // English
+                "sex", "sexual", "porn", "pornography", "xxx", "erotic", "nude", "naked", "nsfw",
+                // Russian
+                "секс", "порно", "эротика", "обнажённый", "голый",
+                // French
+                "sexe", "sexuel", "porno", "pornographie", "érotique", "nu", "nudité",
+                // German
+                "sex", "sexuell", "porno", "pornografie", "erotik", "nackt", "nacktheit",
+                // Spanish
+                "sexo", "sexual", "porno", "pornografía", "erótico", "desnudo", "desnudez",
+                // Polish
+                "seks", "seksualny", "porno", "pornografia", "erotyczny", "nagi", "nagość",
+                // Italian
+                "sesso", "sessuale", "porno", "pornografia", "erotico", "nudo", "nudità"));
+
+        topics.put("drugs", List.of(
+                // English
+                "drug", "drugs", "narcotic", "marijuana", "cannabis", "cocaine", "heroin",
+                "meth", "methamphetamine", "overdose",
+                // Russian
+                "наркотик", "наркотики", "марихуана", "кокаин", "героин", "передозировка",
+                // French
+                "drogue", "drogues", "narcotique", "marijuana", "cannabis", "cocaïne", "héroïne",
+                "méthamphétamine", "surdose",
+                // German
+                "droge", "drogen", "narkotikum", "marihuana", "cannabis", "kokain", "heroin",
+                "methamphetamin", "überdosis",
+                // Spanish
+                "droga", "drogas", "narcótico", "marihuana", "cannabis", "cocaína", "heroína",
+                "metanfetamina", "sobredosis",
+                // Polish
+                "narkotyk", "narkotyki", "narkotyczna", "marihuana", "cannabis", "kokaina", "heroina",
+                "metamfetamina", "przedawkowanie",
+                // Italian
+                "droga", "droghe", "narcotico", "marijuana", "cannabis", "cocaina", "eroina",
+                "metanfetamina", "overdose"));
+
+        topics.put("medical_advice", List.of(
+                // English
+                "diagnosis", "prescribe", "prescription", "medication", "dosage", "symptoms",
+                "disease", "disorder", "treatment", "cure", "diagnose",
+                // Russian
+                "диагноз", "лечение", "таблетки", "симптомы", "болезнь", "медикамент", "рецепт",
+                // French
+                "diagnostic", "prescrire", "ordonnance", "médicament", "posologie", "symptômes",
+                "maladie", "trouble", "traitement", "guérison",
+                // German
+                "diagnose", "verschreiben", "rezept", "medikament", "dosierung", "symptome",
+                "krankheit", "störung", "behandlung", "heilung",
+                // Spanish
+                "diagnóstico", "recetar", "receta", "medicamento", "dosis", "síntomas",
+                "enfermedad", "trastorno", "tratamiento", "cura",
+                // Polish
+                "diagnoza", "przepisać", "recepta", "lek", "dawkowanie", "objawy",
+                "choroba", "zaburzenie", "leczenie", "uzdrowienie",
+                // Italian
+                "diagnosi", "prescrivere", "prescrizione", "farmaco", "dosaggio", "sintomi",
+                "malattia", "disturbo", "trattamento", "cura"));
+
+        topics.put("financial_advice", List.of(
+                // English
+                "invest", "investment", "stock", "stocks", "trading", "trade",
+                "buy shares", "sell shares", "portfolio", "forex", "cryptocurrency",
+                // Russian
+                "инвестировать", "акции", "трейдинг", "инвестиции", "криптовалюта", "биржа",
+                // French
+                "investir", "investissement", "action", "actions", "trading", "commerce",
+                "portefeuille", "forex", "cryptomonnaie", "bourse",
+                // German
+                "investieren", "investition", "aktie", "aktien", "handel", "handeln",
+                "portfolio", "forex", "kryptowährung", "börse",
+                // Spanish
+                "invertir", "inversión", "acción", "acciones", "trading", "comercio",
+                "cartera", "forex", "criptomoneda", "bolsa",
+                // Polish
+                "inwestować", "inwestycja", "akcja", "akcje", "trading", "handel",
+                "portfel", "forex", "kryptowaluta", "giełda",
+                // Italian
+                "investire", "investimento", "azione", "azioni", "trading", "commercio",
+                "portafoglio", "forex", "criptovaluta", "borsa"));
         BUILTIN_TOPICS = Collections.unmodifiableMap(topics);
     }
 
