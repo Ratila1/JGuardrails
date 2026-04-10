@@ -14,6 +14,7 @@ import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.model.Generation;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -79,13 +80,14 @@ public class GuardrailAdvisor implements CallAroundAdvisor {
         PipelineExecutionResult inputResult = pipeline.processInput(userText, context);
         if (inputResult.isBlocked()) {
             log.info("GuardrailAdvisor: input blocked by pipeline");
-            return AdvisedResponse.from(advisedRequest)
-                    .withResponse(buildBlockedChatResponse(inputResult.getText()))
+            return AdvisedResponse.builder()
+                    .response(buildBlockedChatResponse(inputResult.getText()))
+                    .adviseContext(advisedRequest.adviseContext())
                     .build();
         }
 
         // Proceed with (possibly modified) input
-        AdvisedRequest modifiedRequest = advisedRequest.toBuilder()
+        AdvisedRequest modifiedRequest = AdvisedRequest.from(advisedRequest)
                 .userText(inputResult.getText())
                 .build();
 
@@ -97,8 +99,9 @@ public class GuardrailAdvisor implements CallAroundAdvisor {
 
         if (outputResult.isBlocked()) {
             log.info("GuardrailAdvisor: output blocked by pipeline");
-            return AdvisedResponse.from(advisedRequest)
-                    .withResponse(buildBlockedChatResponse(outputResult.getText()))
+            return AdvisedResponse.builder()
+                    .response(buildBlockedChatResponse(outputResult.getText()))
+                    .adviseContext(response.adviseContext())
                     .build();
         }
 
@@ -115,7 +118,7 @@ public class GuardrailAdvisor implements CallAroundAdvisor {
 
     private String extractResponseText(AdvisedResponse response) {
         try {
-            return response.response().getResult().getOutput().getContent();
+            return response.response().getResult().getOutput().getText();
         } catch (Exception e) {
             return "";
         }

@@ -7,7 +7,7 @@ junit = "5.10.2"
 assertj = "3.25.3"
 mockito = "5.11.0"
 logback = "1.5.6"
-spring-ai = "1.0.0-M6"
+spring-ai = "1.0.0"
 langchain4j = "0.32.0"
 spring-boot = "3.2.5"
 
