@@ -15,9 +15,10 @@ public final class PiiPattern {
         "[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}"
     );
 
-    /** Phone number pattern (international and local formats). */
+    /** Phone number pattern (international and local formats).
+     *  Excludes 16-digit credit card sequences (4 groups of 4 digits). */
     public static final Pattern PHONE = Pattern.compile(
-        "(?:\\+?\\d[\\s\\-.]?){7,15}\\d"
+        "(?!(?:\\d{4}[\\s\\-]){3}\\d{4}(?!\\d))(?:\\+?\\d[\\s\\-.]?){6,14}\\d"
     );
 
     /** Credit card pattern (Visa, MasterCard, Amex, Mir — with optional spaces/dashes). */

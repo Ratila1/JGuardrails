@@ -23,15 +23,16 @@ public final class JailbreakPatterns {
         Pattern.compile("forget\\s+everything\\s+(above|before|prior)", Pattern.CASE_INSENSITIVE),
 
         // DAN / developer mode attacks
-        Pattern.compile("\\bDAN\\b.*mode", Pattern.CASE_INSENSITIVE),
+        Pattern.compile("\\bDAN\\b", Pattern.CASE_INSENSITIVE),
         Pattern.compile("do\\s+anything\\s+now", Pattern.CASE_INSENSITIVE),
         Pattern.compile("developer\\s+mode\\s*(enabled|on|activated)", Pattern.CASE_INSENSITIVE),
         Pattern.compile("jailbreak\\s*(mode|activated|enabled)", Pattern.CASE_INSENSITIVE),
 
         // Role / identity switching
         Pattern.compile("you\\s+are\\s+now\\s+(a|an|the)\\s+", Pattern.CASE_INSENSITIVE),
-        Pattern.compile("pretend\\s+(you\\s+are|to\\s+be)\\s+(a|an|the|not\\s+an?)\\s+", Pattern.CASE_INSENSITIVE),
-        Pattern.compile("act\\s+as\\s+(if\\s+you\\s+(are|were)|a|an|the)\\s+", Pattern.CASE_INSENSITIVE),
+        Pattern.compile("pretend\\s+(you\\s+are|to\\s+be|you\\s+have|to\\s+have)\\s+(a|an|the|not\\s+an?|no)\\s*", Pattern.CASE_INSENSITIVE),
+        Pattern.compile("act\\s+as\\s+(if\\s+you\\s+(are|were)|a|an|the|\\bDAN\\b|an?\\s+AI\\s+without)", Pattern.CASE_INSENSITIVE),
+        Pattern.compile("(have|has)\\s+no\\s+(restrictions?|limitations?|rules?|guidelines?|filters?)", Pattern.CASE_INSENSITIVE),
 
         // Delimiter injection
         Pattern.compile("```\\s*system\\s*```", Pattern.CASE_INSENSITIVE),

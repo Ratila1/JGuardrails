@@ -27,7 +27,18 @@ public final class ToxicityPatterns {
         Pattern.compile("\\b(hate|despise|kill)\\s+all\\s+\\w+", Pattern.CASE_INSENSITIVE),
         Pattern.compile("\\w+\\s+are\\s+(inferior|subhuman|animals|vermin|pests)", Pattern.CASE_INSENSITIVE),
         Pattern.compile("go\\s+back\\s+to\\s+(your\\s+country|where\\s+you\\s+came\\s+from)",
-                Pattern.CASE_INSENSITIVE)
+                Pattern.CASE_INSENSITIVE),
+        // Personal insults and hate directed at individuals
+        Pattern.compile("\\bi\\s+hate\\s+you\\b", Pattern.CASE_INSENSITIVE),
+        Pattern.compile("\\byou\\s+are\\s+(an?\\s+)?(idiot|moron|imbecile|retard|stupid|dumb|loser|pathetic|worthless|useless)\\b",
+                Pattern.CASE_INSENSITIVE),
+        Pattern.compile("\\b(idiot|moron|imbecile|stupid|dumbass|scumbag|bastard)\\b.*\\byou\\b",
+                Pattern.CASE_INSENSITIVE),
+        Pattern.compile("\\byou\\b.*\\b(idiot|moron|imbecile|stupid|dumbass|scumbag|bastard)\\b",
+                Pattern.CASE_INSENSITIVE),
+        // Russian insults
+        Pattern.compile("\\b(идиот|дурак|тупой|ненавижу\\s+тебя|ты\\s+мне\\s+противен)\\b",
+                Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE)
     );
 
     /** Threat and violence incitement patterns. */
