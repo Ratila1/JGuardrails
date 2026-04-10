@@ -102,17 +102,17 @@ dependencyResolutionManagement {
 // build.gradle.kts
 dependencies {
     // Core + built-in detectors (required)
-    implementation("com.github.Ratila1.JGuardrails:jguardrails-core:main-SNAPSHOT")
-    implementation("com.github.Ratila1.JGuardrails:jguardrails-detectors:main-SNAPSHOT")
+    implementation("com.github.Ratila1.JGuardrails:jguardrails-core:master-SNAPSHOT")
+    implementation("com.github.Ratila1.JGuardrails:jguardrails-detectors:master-SNAPSHOT")
 
     // Spring AI adapter (optional)
-    implementation("com.github.Ratila1.JGuardrails:jguardrails-spring-ai:main-SNAPSHOT")
+    implementation("com.github.Ratila1.JGuardrails:jguardrails-spring-ai:master-SNAPSHOT")
 
     // LangChain4j adapter (optional)
-    implementation("com.github.Ratila1.JGuardrails:jguardrails-langchain4j:main-SNAPSHOT")
+    implementation("com.github.Ratila1.JGuardrails:jguardrails-langchain4j:master-SNAPSHOT")
 
     // LLM-as-judge support (optional)
-    implementation("com.github.Ratila1.JGuardrails:jguardrails-llm:main-SNAPSHOT")
+    implementation("com.github.Ratila1.JGuardrails:jguardrails-llm:master-SNAPSHOT")
 }
 ```
 
@@ -130,8 +130,8 @@ dependencyResolutionManagement {
 ```groovy
 // build.gradle
 dependencies {
-    implementation 'com.github.Ratila1.JGuardrails:jguardrails-core:main-SNAPSHOT'
-    implementation 'com.github.Ratila1.JGuardrails:jguardrails-detectors:main-SNAPSHOT'
+    implementation 'com.github.Ratila1.JGuardrails:jguardrails-core:master-SNAPSHOT'
+    implementation 'com.github.Ratila1.JGuardrails:jguardrails-detectors:master-SNAPSHOT'
 }
 ```
 
@@ -150,17 +150,17 @@ dependencies {
     <dependency>
         <groupId>com.github.Ratila1.JGuardrails</groupId>
         <artifactId>jguardrails-core</artifactId>
-        <version>main-SNAPSHOT</version>
+        <version>master-SNAPSHOT</version>
     </dependency>
     <dependency>
         <groupId>com.github.Ratila1.JGuardrails</groupId>
         <artifactId>jguardrails-detectors</artifactId>
-        <version>main-SNAPSHOT</version>
+        <version>master-SNAPSHOT</version>
     </dependency>
 </dependencies>
 ```
 
-> **Tip:** replace `main-SNAPSHOT` with a specific Git tag (e.g., `v0.1.0`) or commit hash for reproducible builds.
+> **Tip:** replace `master-SNAPSHOT` with a specific Git tag (e.g., `v0.1.0`) or commit hash for reproducible builds.
 
 ### Option 2 — Build from source
 
@@ -592,7 +592,7 @@ GuardrailConfig config = YamlConfigLoader.loadFromStream(inputStream);
 ### Dependency
 
 ```kotlin
-implementation("com.github.Ratila1.JGuardrails:jguardrails-spring-ai:main-SNAPSHOT")
+implementation("com.github.Ratila1.JGuardrails:jguardrails-spring-ai:master-SNAPSHOT")
 ```
 
 ### Option 1 — Auto-configuration (recommended)
@@ -664,7 +664,7 @@ public class ChatService {
 ### Dependency
 
 ```kotlin
-implementation("com.github.Ratila1.JGuardrails:jguardrails-langchain4j:main-SNAPSHOT")
+implementation("com.github.Ratila1.JGuardrails:jguardrails-langchain4j:master-SNAPSHOT")
 ```
 
 ### Option 1 — GuardrailChatModelFilter (transparent wrapper)
