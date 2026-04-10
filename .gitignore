@@ -31,3 +31,8 @@ logs/
 
 # Claude Code
 .claude/settings.local.json
+
+# Extracted jar artifacts (should never be committed)
+META-INF/
+antlr4/
+embedding/
