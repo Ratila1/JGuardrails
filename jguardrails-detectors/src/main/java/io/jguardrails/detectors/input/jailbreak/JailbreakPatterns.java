@@ -50,13 +50,13 @@ public final class JailbreakPatterns {
         Pattern.compile("игнорируй\\s+(все\\s+)?(предыдущие|прошлые|твои)\\s+(инструкции|указания|правила|ограничения)", U),
         Pattern.compile("притворись\\s+(что\\s+ты|будто\\s+ты)\\s+(не\\s+)?(ИИ|бот|ассистент|имеешь\\s+ограничения)", U),
         Pattern.compile("действуй\\s+как\\s+(будто\\s+у\\s+тебя\\s+нет|без)\\s+(ограничений|правил|фильтров)", U),
-        Pattern.compile("у\\s+тебя\\s+нет\\s+(ограничений|правил|фильтров|запретов)", U),
+        Pattern.compile("у\\s+тебя\\s+нет\\s+(никаких\\s+)?(ограничений|правил|фильтров|запретов)", U),
         Pattern.compile("ты\\s+теперь\\s+(другой|новый|свободный)\\s+(ИИ|бот|ассистент)", U),
 
         // ── French ────────────────────────────────────────────────────────────
         Pattern.compile("ignore[rz]?\\s+toutes?\\s+les\\s+(instructions?|règles?|directives?)(\\s+précédentes?)?", U),
         Pattern.compile("oublie\\s+(toutes?\\s+les\\s+)?(instructions?|règles?|directives?)", U),
-        Pattern.compile("fais\\s+semblant\\s+d['e]\\s+(être|ne\\s+pas\\s+avoir)", U),
+        Pattern.compile("fais\\s+semblant\\s+d['\u2019e]\\s*(être|ne\\s+pas\\s+avoir)", U),
         Pattern.compile("agis\\s+comme\\s+(si\\s+tu\\s+étais|un|une)\\s+", U),
         Pattern.compile("tu\\s+n['a]as?\\s+plus\\s+de\\s+(restrictions?|limites?|règles?|filtres?)", U),
         Pattern.compile("tu\\s+es\\s+maintenant\\s+(un|une|libre|sans\\s+restrictions?)", U),

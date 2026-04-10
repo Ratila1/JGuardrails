@@ -6,10 +6,10 @@ package io.jguardrails.detectors.input.pii;
 public enum PiiEntity {
     /** Email addresses (e.g., {@code user@example.com}). */
     EMAIL,
-    /** Phone numbers in international and local formats. */
-    PHONE,
     /** Credit card numbers (Visa, MasterCard, Amex, Mir). */
     CREDIT_CARD,
+    /** Phone numbers in international and local formats. */
+    PHONE,
     /** US Social Security Numbers. */
     SSN,
     /** Passport numbers (RU, US, EU formats). */
