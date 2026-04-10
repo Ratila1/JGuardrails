@@ -150,8 +150,13 @@ dependencies {
 
 <dependencies>
     <dependency>
-        <groupId>com.github.Ratila1</groupId>
-        <artifactId>JGuardrails</artifactId>
+        <groupId>com.github.Ratila1.JGuardrails</groupId>
+        <artifactId>jguardrails-core</artifactId>
+        <version>v0.1.0</version>
+    </dependency>
+    <dependency>
+        <groupId>com.github.Ratila1.JGuardrails</groupId>
+        <artifactId>jguardrails-detectors</artifactId>
         <version>v0.1.0</version>
     </dependency>
 </dependencies>
