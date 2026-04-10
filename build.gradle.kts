@@ -28,7 +28,7 @@ subprojects {
                 pom {
                     name.set(project.name)
                     description.set("JGuardrails - LLM guardrails library for Java")
-                    url.set("https://github.com/YOUR_USERNAME/JGuardrails")
+                    url.set("https://github.com/Ratila1/JGuardrails")
                     licenses {
                         license {
                             name.set("Apache License 2.0")
