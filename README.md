@@ -115,16 +115,16 @@ Step 2 — add dependencies to `build.gradle.kts`:
 ```kotlin
 dependencies {
     // Core + built-in detectors (required)
-    implementation("com.github.Ratila1:JGuardrails:v0.1.2")
+    implementation("com.github.Ratila1:JGuardrails:v0.1.7")
 
     // Spring AI adapter (optional)
-    implementation("com.github.Ratila1.JGuardrails:jguardrails-spring-ai:v0.1.2")
+    implementation("com.github.Ratila1.JGuardrails:jguardrails-spring-ai:v0.1.7")
 
     // LangChain4j adapter (optional)
-    implementation("com.github.Ratila1.JGuardrails:jguardrails-langchain4j:v0.1.2")
+    implementation("com.github.Ratila1.JGuardrails:jguardrails-langchain4j:v0.1.7")
 
     // LLM-as-judge support (optional)
-    implementation("com.github.Ratila1.JGuardrails:jguardrails-llm:v0.1.2")
+    implementation("com.github.Ratila1.JGuardrails:jguardrails-llm:v0.1.7")
 }
 ```
 
@@ -144,7 +144,7 @@ dependencyResolutionManagement {
 ```groovy
 // build.gradle
 dependencies {
-    implementation 'com.github.Ratila1:JGuardrails:v0.1.2'
+    implementation 'com.github.Ratila1:JGuardrails:v0.1.7'
 }
 ```
 
@@ -163,17 +163,17 @@ dependencies {
     <dependency>
         <groupId>com.github.Ratila1.JGuardrails</groupId>
         <artifactId>jguardrails-core</artifactId>
-        <version>v0.1.2</version>
+        <version>v0.1.7</version>
     </dependency>
     <dependency>
         <groupId>com.github.Ratila1.JGuardrails</groupId>
         <artifactId>jguardrails-detectors</artifactId>
-        <version>v0.1.2</version>
+        <version>v0.1.7</version>
     </dependency>
 </dependencies>
 ```
 
-> **Tip:** replace `v0.1.2` with `master-SNAPSHOT` to always get the latest build from the master branch.
+> **Tip:** replace `v0.1.7` with `master-SNAPSHOT` to always get the latest build from the master branch.
 
 ### Option 2 — Build from source
 
@@ -605,7 +605,7 @@ GuardrailConfig config = YamlConfigLoader.loadFromStream(inputStream);
 ### Dependency
 
 ```kotlin
-implementation("com.github.Ratila1.JGuardrails:jguardrails-spring-ai:v0.1.2")
+implementation("com.github.Ratila1.JGuardrails:jguardrails-spring-ai:v0.1.7")
 ```
 
 ### Option 1 — Auto-configuration (recommended)
@@ -677,7 +677,7 @@ public class ChatService {
 ### Dependency
 
 ```kotlin
-implementation("com.github.Ratila1.JGuardrails:jguardrails-langchain4j:v0.1.2")
+implementation("com.github.Ratila1.JGuardrails:jguardrails-langchain4j:v0.1.7")
 ```
 
 ### Option 1 — GuardrailChatModelFilter (transparent wrapper)
