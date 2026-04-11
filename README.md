@@ -64,6 +64,14 @@ JGuardrails is a framework-agnostic toolkit that adds programmable safety rails 
 
 ---
 
+### Known limitations
+
+- Detection is pattern-based (regex), without semantic understanding — JGuardrails is a guardrail layer, not a complete security solution.
+- Officially tuned and tested languages for jailbreak/toxicity: EN / RU / DE / FR / ES / PL / IT. Other languages may bypass detectors.
+- Obfuscated toxicity (full leet, heavy spacing, reversed text) and sophisticated social-engineering prompts can still pass.
+- PII patterns are intentionally conservative and may sometimes mask technical identifiers (UUIDs, ticket numbers, etc.).
+- For high-risk or regulated use cases, JGuardrails should be combined with additional LLM- or ML-based safety systems.
+
 ## How It Works
 
 ```
@@ -956,6 +964,7 @@ JGuardrails/
 ```
 
 ---
+
 
 ## License
 
