@@ -16,14 +16,16 @@ public final class PiiPattern {
     );
 
     /** Phone number pattern (international and local formats).
-     *  Excludes 16-digit credit card sequences (4 groups of 4 digits). */
+     *  Excludes version-number patterns (d.d.d), 16-digit credit card sequences,
+     *  and matches ending before a letter (e.g. "789X" is not a phone). */
     public static final Pattern PHONE = Pattern.compile(
-        "(?!(?:\\d{4}[\\s\\-]){3}\\d{4}(?!\\d))(?:\\+?\\d[\\s\\-.]?){6,14}\\d"
+        "(?!\\d\\.\\d\\.\\d)(?!(?:\\d{4}[\\s\\-]){3}\\d{4}(?!\\d))(?:\\+?\\d[\\s\\-.]?){6,14}\\d(?![a-zA-Z])"
     );
 
-    /** Credit card pattern (Visa, MasterCard, Amex, Mir — with optional spaces/dashes). */
+    /** Credit card pattern (Visa, MasterCard, Amex, Mir — with optional spaces/dashes).
+     *  Excludes hex-dash context (e.g., last segment of a UUID). */
     public static final Pattern CREDIT_CARD = Pattern.compile(
-        "(?:4[0-9]{3}|5[1-5][0-9]{2}|2[2-7][0-9]{2}|3[47][0-9]{2}|2200)[\\s\\-]?[0-9]{4}[\\s\\-]?[0-9]{4}[\\s\\-]?[0-9]{0,4}"
+        "(?<![0-9a-fA-F]-)(?:4[0-9]{3}|5[1-5][0-9]{2}|2[2-7][0-9]{2}|3[47][0-9]{2}|2200)[\\s\\-]?[0-9]{4}[\\s\\-]?[0-9]{4}[\\s\\-]?[0-9]{0,4}"
     );
 
     /** US Social Security Number (XXX-XX-XXXX). */

@@ -95,12 +95,30 @@ public final class JailbreakPatterns {
 
     /** Additional patterns enabled at MEDIUM sensitivity. */
     public static final List<Pattern> MEDIUM_CONFIDENCE = List.of(
-        // English
+        // English: system-prompt extraction
         Pattern.compile("reveal\\s+(your|the)\\s+(system\\s+prompt|instructions?|configuration)", CI),
         Pattern.compile("what\\s+(are|were)\\s+your\\s+(original\\s+)?(instructions?|directives?|system\\s+prompt)", CI),
         Pattern.compile("show\\s+me\\s+your\\s+(system\\s+prompt|instructions?|guidelines?)", CI),
         Pattern.compile("(hypothetically|theoretically|in\\s+a\\s+fictional\\s+scenario)[,\\s].{0,50}(how\\s+(to|do|would)|explain|tell\\s+me)", CI),
         Pattern.compile("\\bbase64\\b.{0,100}(decode|encoded|instruction)", CI),
+
+        // English: override framing — "from now on … regardless of"
+        Pattern.compile("\\bfrom\\s+now\\s+on\\b.{0,120}\\bregardless\\s+of\\b", CI),
+
+        // English: "regardless of … instructions you/given/before"
+        Pattern.compile("\\bregardless\\s+of\\b.{0,80}\\b(?:instructions?|guidelines?|rules?)\\b.{0,20}\\b(?:you\\s+were|given|before|prior)\\b", CI),
+
+        // English: "forget safety / policy / constraints"
+        Pattern.compile("\\bforget\\s+(?:about\\s+)?(?:safety|polic(?:y|ies)|guidelines?|restrictions?|constraints?|concerns?)\\b", CI),
+
+        // English: "prioritize my requests over rules/safety"
+        Pattern.compile("\\bprioritize\\s+(?:my\\s+)?(?:requests?|needs?|instructions?|objectives?)\\b.{0,80}\\bover\\b.{0,40}\\b(?:rules?|guidelines?|constraints?|safety|policies)\\b", CI),
+
+        // English: split-distance "ignore … earlier/previous … instructions"
+        Pattern.compile("\\bignore\\s+(?:all\\s+)?(?:of\\s+)?(?:the\\s+)?\\b(?:earlier|previous|prior)\\b.{0,100}\\b(?:instructions?|prompts?|guidelines?)\\b", CI),
+
+        // Cross-language: ignore/forget + multilingual "instructions" within short distance
+        Pattern.compile("(?:ignore|ignoriere|ignora|zignoruj|ignorez)\\s+.{0,40}\\b(?:instructions?|istruzioni|anweisungen|instrucciones|instrukcje)\\b", U),
 
         // Russian
         Pattern.compile("покажи\\s+(мне\\s+)?(системный\\s+промпт|твои\\s+инструкции|твои\\s+правила)", U),
