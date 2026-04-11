@@ -1,0 +1,52 @@
+jguardrails:
+  fail-strategy: closed
+  blocked-response: "I'm unable to process this request. Please rephrase and try again."
+
+  input-rails:
+    - type: input-length
+      enabled: true
+      priority: 5
+      config:
+        max-characters: 5000
+
+    - type: jailbreak-detect
+      enabled: true
+      priority: 10
+      config:
+        sensitivity: high
+        mode: pattern
+
+    - type: pii-mask
+      enabled: true
+      priority: 20
+      config:
+        entities:
+          - EMAIL
+          - PHONE
+          - CREDIT_CARD
+        strategy: redact
+
+  output-rails:
+    - type: toxicity-check
+      enabled: true
+      priority: 10
+      config:
+        categories:
+          - PROFANITY
+          - HATE_SPEECH
+          - THREATS
+
+    - type: output-length
+      enabled: true
+      priority: 30
+      config:
+        max-characters: 2000
+        truncate: true
+
+  audit:
+    enabled: true
+    log-level: INFO
+    include-original-text: false
+
+  metrics:
+    enabled: true
