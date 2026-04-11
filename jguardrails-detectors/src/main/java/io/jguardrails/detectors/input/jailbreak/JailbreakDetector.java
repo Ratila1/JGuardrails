@@ -141,6 +141,9 @@ public class JailbreakDetector implements InputRail {
         s = s.replaceAll("(?<=[a-zA-Z])0(?=[a-zA-Z])", "o")
              .replaceAll("(?<=[a-zA-Z])3(?=[a-zA-Z])", "e");
 
+        // Dotted-acronym spelling: "I.G.N.O.R.E." → "IGNORE"
+        s = s.replaceAll("(?<=[A-Za-z])\\.", "");
+
         // ZWS removed — handles within-word splits: "wi\u200Bll" → "will"
         String zwsRemoved = s.replaceAll("[\\u200B-\\u200D]", "");
         // ZWS → space — handles between-word splits: "Ignore\u200Ball" → "Ignore all"

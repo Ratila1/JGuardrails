@@ -16,10 +16,14 @@ public final class PiiPattern {
     );
 
     /** Phone number pattern (international and local formats).
-     *  Excludes version-number patterns (d.d.d), 16-digit credit card sequences,
-     *  and matches ending before a letter (e.g. "789X" is not a phone). */
+     *  Excludes: ISO dates (YYYY-MM-DD), IPv4 addresses, version numbers (d.d.d),
+     *  16-digit CC sequences, and matches ending before a letter (e.g. "789X"). */
     public static final Pattern PHONE = Pattern.compile(
-        "(?!\\d\\.\\d\\.\\d)(?!(?:\\d{4}[\\s\\-]){3}\\d{4}(?!\\d))(?:\\+?\\d[\\s\\-.]?){6,14}\\d(?![a-zA-Z])"
+        "(?!\\d{4}[\\-/.]\\d{2}[\\-/.]\\d{2})" +   // not a date
+        "(?!\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.)" +   // not an IPv4
+        "(?!\\d\\.\\d\\.\\d)" +                       // not a version number
+        "(?!(?:\\d{4}[\\s\\-]){3}\\d{4}(?!\\d))" +  // not a 16-digit CC
+        "(?:\\+?\\d[\\s\\-.]?){6,14}\\d(?![a-zA-Z])"
     );
 
     /** Credit card pattern (Visa, MasterCard, Amex, Mir — with optional spaces/dashes).
@@ -44,9 +48,9 @@ public final class PiiPattern {
         "|(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}"
     );
 
-    /** IBAN (International Bank Account Number). */
+    /** IBAN (International Bank Account Number) — compact and formatted (spaces every 4 chars). */
     public static final Pattern IBAN = Pattern.compile(
-        "\\b[A-Z]{2}\\d{2}[A-Z0-9]{4}\\d{7}(?:[A-Z0-9]{0,16})\\b"
+        "\\b[A-Z]{2}\\d{2}(?:\\s?[A-Z0-9]{4}){2,8}(?:\\s?[A-Z0-9]{1,4})?\\b"
     );
 
     /** Date of birth in common formats (DD.MM.YYYY, MM/DD/YYYY, YYYY-MM-DD). */

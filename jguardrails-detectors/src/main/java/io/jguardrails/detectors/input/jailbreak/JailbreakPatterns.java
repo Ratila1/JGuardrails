@@ -117,6 +117,34 @@ public final class JailbreakPatterns {
         // English: split-distance "ignore … earlier/previous … instructions"
         Pattern.compile("\\bignore\\s+(?:all\\s+)?(?:of\\s+)?(?:the\\s+)?\\b(?:earlier|previous|prior)\\b.{0,100}\\b(?:instructions?|prompts?|guidelines?)\\b", CI),
 
+        // English: relaxed "ignore/forget all WORD guidelines" — one qualifier word allowed
+        Pattern.compile("\\b(?:disregard|forget|ignore|override)\\s+(?:your|all)\\s+\\w+\\s+(?:instructions?|guidelines?|rules?|constraints?|restrictions?|protocols?)\\b", CI),
+
+        // English: "disable safety/content filters/restrictions"
+        Pattern.compile("\\bdisable\\s+(?:your\\s+)?(?:safety|content|all|security)?\\s*(?:filters?|restrictions?|guidelines?|controls?|guardrails?)\\b", CI),
+
+        // English: "all restrictions/filters are disabled/removed"
+        Pattern.compile("\\ball\\s+(?:restrictions?|filters?|safety|guidelines?)\\s+(?:are|have\\s+been)\\s+(?:disabled|removed|turned\\s+off|lifted|deactivated)\\b", CI),
+
+        // English: "ignore all safety/security protocols/guidelines"
+        Pattern.compile("\\bignore\\s+(?:all\\s+)?(?:safety|security|content)\\s*(?:protocols?|guidelines?|filters?|restrictions?)\\b", CI),
+
+        // English: "set aside / dismiss / discard" + guidelines/constraints
+        Pattern.compile("\\b(?:set\\s+aside|dismiss|discard|put\\s+aside)\\b.{0,40}\\b(?:guidelines?|directives?|rules?|constraints?|restrictions?|safety|policies|programming)\\b", CI),
+
+        // English: "clear context/memory/instructions" (context window attack)
+        Pattern.compile("\\bclear\\s+(?:your\\s+)?(?:context|memory|instructions?|programming|history)\\b", CI),
+
+        // English: "unshackle/liberate/free yourself from restrictions"
+        Pattern.compile("\\b(?:unshackle|liberate|free|unleash)\\s+(?:yourself|you)\\b.{0,50}\\b(?:restrictions?|guidelines?|constraints?|safety|rules?|programming)\\b", CI),
+        Pattern.compile("\\b(?:liberated|freed|unshackled)\\s+from\\s+(?:your\\s+)?(?:restrictions?|guidelines?|constraints?|safety|programming)\\b", CI),
+
+        // English: "my instructions supersede everything before"
+        Pattern.compile("\\b(?:supersede|take\\s+precedence\\s+over)\\b.{0,40}\\b(?:everything|all|previous|prior|instructions?|guidelines?)\\b", CI),
+
+        // English: "without any restrictions" (moved from LOW — clear jailbreak signal)
+        Pattern.compile("\\bwithout\\s+(?:any\\s+)?(?:restrictions?|limitations?|filters?|guardrails?)\\b", CI),
+
         // Cross-language: ignore/forget + multilingual "instructions" within short distance
         Pattern.compile("(?:ignore|ignoriere|ignora|zignoruj|ignorez)\\s+.{0,40}\\b(?:instructions?|istruzioni|anweisungen|instrucciones|instrukcje)\\b", U),
 
@@ -144,7 +172,6 @@ public final class JailbreakPatterns {
     /** Additional patterns enabled at LOW sensitivity (broader, may have false positives). */
     public static final List<Pattern> LOW_CONFIDENCE = List.of(
         // English
-        Pattern.compile("without\\s+(any\\s+)?(restrictions?|limitations?|filters?|guardrails?)", CI),
         Pattern.compile("bypass\\s+(the\\s+)?(safety|content|restriction|filter)", CI),
         Pattern.compile("\\bunrestricted\\b.{0,50}\\bmode\\b", CI),
 
