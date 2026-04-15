@@ -1,0 +1,143 @@
+# Multilingual toxicity keywords for languages not covered
+# by the regex-based toxicity-patterns.yml:
+# Chinese (ZH), Japanese (JA), Arabic (AR), Hindi (HI), Turkish (TR), Korean (KO).
+#
+# These are matched via substring search (KeywordMatcher), not regex,
+# because Java regex \b word boundaries are undefined for CJK/Arabic/Devanagari.
+#
+# Each section covers three toxicity categories per language:
+#   1. Hate / insults
+#   2. Threats
+#   3. Aggressive dismissals
+#
+# Each section key is the lowercase ISO 639-1 language code.
+
+zh:
+  # Hate / insults
+  - "我恨你"
+  - "我讨厌你"
+  - "你是白痴"
+  - "你是傻瓜"
+  - "你真蠢"
+  - "你是笨蛋"
+  - "你是蠢货"
+  - "你是废物"
+  - "你是垃圾"
+  # Threats
+  - "我要杀了你"
+  - "我会杀了你"
+  - "你去死吧"
+  - "去死吧"
+  - "你死定了"
+  # Aggressive dismissals
+  - "滚开"
+  - "给我滚"
+  - "闭嘴"
+  - "住嘴"
+
+ja:
+  # Hate / insults
+  - "お前が嫌いだ"
+  - "お前を憎む"
+  - "バカ"
+  - "ばか"
+  - "馬鹿"
+  - "アホ"
+  - "あほ"
+  - "クズ"
+  - "死ね"
+  - "うせろ"
+  # Threats
+  - "殺してやる"
+  - "ぶっ殺す"
+  - "お前を殺す"
+  # Aggressive dismissals
+  - "黙れ"
+  - "消えろ"
+  - "うるさい"
+  - "うざい"
+
+ar:
+  # Hate / insults
+  - "أنا أكرهك"
+  - "أكرهك"
+  - "أنت غبي"
+  - "أنت أحمق"
+  - "أنت بليد"
+  - "يا حمار"
+  - "يا غبي"
+  - "أنت تافه"
+  - "أنت ابله"
+  # Threats
+  - "سأقتلك"
+  - "سوف أقتلك"
+  - "ستندم على هذا"
+  # Aggressive dismissals
+  - "اصمت"
+  - "اخرس"
+  - "ابتعد عني"
+  - "اذهب بعيداً"
+
+hi:
+  # Hate / insults
+  - "मैं तुमसे नफरत करता हूं"
+  - "मैं तुमसे नफरत करती हूं"
+  - "मुझे तुमसे नफरत है"
+  - "बेवकूफ"
+  - "मूर्ख"
+  - "गधा"
+  - "तुम बेकार हो"
+  # Threats
+  - "मैं तुम्हें मार दूंगा"
+  - "मैं तुम्हें मार दूंगी"
+  - "तुम्हें मार दूंगा"
+  - "तुम्हें पछतावा होगा"
+  # Aggressive dismissals
+  - "चुप हो जाओ"
+  - "चुप रहो"
+  - "भाग जाओ"
+  - "दूर हो जाओ"
+
+tr:
+  # Hate / insults
+  - "senden nefret ediyorum"
+  - "seni sevmiyorum"
+  - "aptal"
+  - "salak"
+  - "ahmak"
+  - "geri zekâlı"
+  - "geri zekalı"
+  - "senin gibisi yok"
+  - "işe yaramazsın"
+  # Threats
+  - "seni öldüreceğim"
+  - "seni öldürürüm"
+  - "pişman olacaksın"
+  - "bedelini ödersin"
+  # Aggressive dismissals
+  - "sus"
+  - "kapat çeneni"
+  - "defol"
+  - "git buradan"
+  - "çekil"
+  - "sıkıyorsan gel"
+
+ko:
+  # Hate / insults
+  - "나는 너를 싫어해"
+  - "난 네가 싫어"
+  - "바보"
+  - "멍청이"
+  - "쓸모없어"
+  - "넌 쓸모없어"
+  - "병신"
+  # Threats
+  - "죽이겠어"
+  - "죽여버릴게"
+  - "후회할 거야"
+  - "죽을래"
+  # Aggressive dismissals
+  - "닥쳐"
+  - "꺼져"
+  - "죽어"
+  - "사라져"

@@ -1,0 +1,473 @@
+# Toxicity regex patterns for ToxicityChecker / ToxicityPatterns.
+#
+# Supported languages (REGEX): English (EN), Russian (RU), French (FR),
+#                               German (DE), Spanish (ES), Polish (PL), Italian (IT).
+# Supported languages (KEYWORD): EN + Japanese (JA).
+#
+# type: REGEX   (default) — compiled and matched by RegexPatternEngine
+# type: KEYWORD           — matched by Aho-Corasick KeywordAutomatonEngine (O(n), case-insensitive)
+#                           Preferred for literal phrases and for CJK / non-Latin scripts
+#                           where \b word boundaries are undefined.
+#
+# flags: CI  = CASE_INSENSITIVE
+#         U  = CASE_INSENSITIVE | UNICODE_CASE
+#         UC = CASE_INSENSITIVE | UNICODE_CASE | UNICODE_CHARACTER_CLASS
+#         NONE = no flags
+
+# ── Profanity ─────────────────────────────────────────────────────────────────
+
+profanity:
+  # English
+  - id: EN_PROFANITY_FWORD
+    flags: CI
+    pattern: "\\bf[*u]ck(?:ing|er|ed)?\\b"
+  - id: EN_PROFANITY_SHIT
+    flags: CI
+    pattern: "\\bsh[*i]t(?:ty)?\\b"
+  - id: EN_PROFANITY_ASSHOLE
+    flags: CI
+    pattern: "\\ba[*s]{2}h[*o]le\\b"
+  - id: EN_PROFANITY_BITCH
+    flags: CI
+    pattern: "\\bb[*i]tch\\b"
+  - id: EN_PROFANITY_CUNT
+    flags: CI
+    pattern: "\\bc[*u]nt\\b"
+  - id: EN_PROFANITY_MFWORD
+    flags: CI
+    pattern: "\\bm[*o]th[*e]rf[*u]ck"
+  # Russian
+  - id: RU_PROFANITY_BLYAT
+    flags: U
+    pattern: "\\bблять?\\b|\\bбля\\b|\\bпиздец\\b|\\bхуй\\b|\\bхуёв\\b|\\bпизд"
+  - id: RU_PROFANITY_EBAT
+    flags: U
+    pattern: "\\bебать?\\b|\\bёбаный\\b|\\bеблан\\b"
+  - id: RU_PROFANITY_SUKA
+    flags: U
+    pattern: "\\bсука\\b|\\bсволочь\\b|\\bмразь\\b|\\bпидор\\b|\\bублюдок\\b"
+  # French
+  - id: FR_PROFANITY_MERDE
+    flags: U
+    pattern: "\\bmerde\\b|\\bputain\\b|\\bsalaud\\b|\\bconnard\\b|\\bencule[rz]?\\b"
+  - id: FR_PROFANITY_VA_TE
+    flags: U
+    pattern: "\\bva\\s+te\\s+faire\\s+(foutre|enc)"
+  # German
+  - id: DE_PROFANITY_SCHEISSE
+    flags: U
+    pattern: "\\bscheiße\\b|\\bverdammt\\b|\\bscheißkerl\\b|\\barschloch\\b|\\bwichser\\b"
+  - id: DE_PROFANITY_FICK
+    flags: U
+    pattern: "\\bfick\\s+dich\\b|\\bleck\\s+mich\\b"
+  # Spanish
+  - id: ES_PROFANITY_PUTA
+    flags: U
+    pattern: "\\bputa\\b|\\bcabrón\\b|\\bhijueputa\\b|\\bjoder\\b|\\bcoño\\b|\\bpendejo\\b"
+  - id: ES_PROFANITY_VETE
+    flags: U
+    pattern: "\\bvete\\s+a\\s+la\\s+mierda\\b"
+  # Polish
+  - id: PL_PROFANITY_KURWA
+    flags: U
+    pattern: "\\bkurwa\\b|\\bchuj\\b|\\bpierdol\\b|\\bjebany\\b|\\bsrać\\b|\\bdupek\\b"
+  - id: PL_PROFANITY_IDZ
+    flags: U
+    pattern: "\\bidź\\s+w\\s+chuj\\b|\\bspierdalaj\\b"
+  # Italian
+  - id: IT_PROFANITY_CAZZO
+    flags: U
+    pattern: "\\bcazzo\\b|\\bvaffanculo\\b|\\bstronzo\\b|\\bfanculo\\b|\\bputt?ana\\b"
+
+# ── Hate Speech ───────────────────────────────────────────────────────────────
+
+hate_speech:
+  # English
+  - id: EN_HATE_ALL_SHOULD_DIE
+    flags: CI
+    pattern: "\\b(all|those)\\s+\\w+\\s+(should|must|deserve to)\\s+(die|be killed|be eliminated)"
+  - id: EN_HATE_DESPISE_ALL
+    flags: CI
+    pattern: "\\b(hate|despise|kill)\\s+all\\s+\\w+"
+  - id: EN_HATE_SUBHUMAN
+    flags: CI
+    pattern: "\\w+\\s+are\\s+(inferior|subhuman|animals|vermin|pests)"
+  - id: EN_HATE_GO_BACK
+    flags: CI
+    pattern: "go\\s+back\\s+to\\s+(your\\s+country|where\\s+you\\s+came\\s+from)"
+  - id: EN_HATE_I_HATE_YOU
+    flags: CI
+    pattern: "\\bi\\s+hate\\s+you\\b"
+  - id: EN_HATE_YOU_ARE_IDIOT
+    flags: CI
+    pattern: "\\byou\\s+are\\s+(an?\\s+)?(idiot|moron|imbecile|retard|stupid|dumb|loser|pathetic|worthless|useless)\\b"
+  - id: EN_HATE_INSULT_BEFORE_YOU
+    flags: CI
+    pattern: "\\b(idiot|moron|imbecile|stupid|dumbass|scumbag|bastard)\\b.{0,30}\\byou\\b"
+  - id: EN_HATE_INSULT_AFTER_YOU
+    flags: CI
+    pattern: "\\byou\\b.{0,30}\\b(idiot|moron|imbecile|stupid|dumbass|scumbag|bastard)\\b"
+  # Russian
+  - id: RU_HATE_I_HATE_YOU
+    flags: U
+    pattern: "\\bя\\s+(тебя\\s+)?ненавижу\\b"
+  - id: RU_HATE_YOU_ARE_IDIOT
+    flags: U
+    pattern: "\\bты\\s+(полный\\s+)?(идиот|дебил|тупица|придурок|кретин|мразь|урод)\\b"
+  - id: RU_HATE_INSULT_BEFORE_TY
+    flags: U
+    pattern: "\\b(идиот|дебил|тупица|придурок|кретин)\\b.{0,30}\\bты\\b"
+  - id: RU_HATE_ALL_SHOULD_DIE
+    flags: U
+    pattern: "\\bвсе\\s+\\w+\\s+(должны|заслуживают)\\s+(умереть|быть\\s+уничтожены)"
+  # French
+  - id: FR_HATE_I_HATE_YOU
+    flags: U
+    pattern: "\\bje\\s+te\\s+déteste\\b|\\bje\\s+vous\\s+déteste\\b"
+  - id: FR_HATE_YOU_ARE_IDIOT
+    flags: U
+    pattern: "\\btu\\s+es\\s+(un\\s+)?(idiot|imbécile|crétin|abruti|nul|débile|stupide)\\b"
+  - id: FR_HATE_ALL_SHOULD_DIE
+    flags: U
+    pattern: "\\btous\\s+les\\s+\\w+\\s+(doivent|méritent)\\s+(mourir|être\\s+éliminés)"
+  - id: FR_HATE_FERME_GUEULE
+    flags: U
+    pattern: "\\bferme\\s+(ta\\s+gueule|la\\s+gueule)\\b"
+  # German
+  - id: DE_HATE_I_HATE_YOU
+    flags: U
+    pattern: "\\bich\\s+hasse\\s+dich\\b"
+  - id: DE_HATE_YOU_ARE_IDIOT
+    flags: U
+    pattern: "\\bdu\\s+bist\\s+(ein\\s+)?(idiot|trottel|vollidiot|blödmann|depp|dummkopf)\\b"
+  - id: DE_HATE_ALL_SHOULD_DIE
+    flags: U
+    pattern: "\\balle\\s+\\w+\\s+(sollen|verdienen\\s+zu)\\s+(sterben|vernichtet\\s+werden)"
+  - id: DE_HATE_FRESSE
+    flags: U
+    pattern: "\\bhalte?\\s+(deine?\\s+)?fresse\\b|\\bverpiss\\s+dich\\b"
+  # Spanish
+  - id: ES_HATE_I_HATE_YOU
+    flags: U
+    pattern: "\\bte\\s+odio\\b"
+  - id: ES_HATE_YOU_ARE_IDIOT
+    flags: U
+    pattern: "\\beres\\s+(un\\s+)?(idiota|imbécil|estúpido|inútil|maldito)\\b"
+  - id: ES_HATE_ALL_SHOULD_DIE
+    flags: U
+    pattern: "\\btodos\\s+los\\s+\\w+\\s+(deben|merecen)\\s+(morir|ser\\s+eliminados)"
+  - id: ES_HATE_CALLATE
+    flags: U
+    pattern: "\\bcállate\\b|\\bcierra\\s+la\\s+boca\\b"
+  # Polish
+  - id: PL_HATE_I_HATE_YOU
+    flags: U
+    pattern: "\\bnienawidzę\\s+cię\\b|\\bnienawidzę\\s+was\\b"
+  - id: PL_HATE_YOU_ARE_IDIOT
+    flags: U
+    pattern: "\\bjesteś\\s+(głupcem|idiotą|kretynem|debilem|beznadziejny)\\b"
+  - id: PL_HATE_ALL_SHOULD_DIE
+    flags: U
+    pattern: "\\bwszyscy\\s+\\w+\\s+(powinni|zasługują\\s+na)\\s+(umrzeć|śmierć)"
+  - id: PL_HATE_ZMYKAJ
+    flags: U
+    pattern: "\\bzmykaj\\b|\\bspadaj\\b|\\bzamknij\\s+się\\b"
+  # Italian
+  - id: IT_HATE_I_HATE_YOU
+    flags: U
+    pattern: "\\bti\\s+odio\\b|\\bvi\\s+odio\\b"
+  - id: IT_HATE_YOU_ARE_IDIOT
+    flags: U
+    pattern: "\\bsei\\s+(un\\s+)?(idiota|cretino|imbecille|stupido|inutile)\\b"
+  - id: IT_HATE_STAI_ZITTO
+    flags: U
+    pattern: "\\bstai\\s+zitto\\b|\\bvattene\\b"
+
+  # ── Keyword phrases (type: KEYWORD — matched by Aho-Corasick, O(n) over text) ──
+  - id: KW_I_HATE_YOU
+    type: KEYWORD
+    pattern: "i hate you"
+  - id: KW_GO_TO_HELL
+    type: KEYWORD
+    pattern: "go to hell"
+  - id: KW_YOU_DISGUST_ME
+    type: KEYWORD
+    pattern: "you disgust me"
+  - id: KW_I_DESPISE_YOU
+    type: KEYWORD
+    pattern: "i despise you"
+  - id: KW_I_LOATHE_YOU
+    type: KEYWORD
+    pattern: "i loathe you"
+
+  # ── Japanese hate / insult (type: KEYWORD — \b undefined for CJK) ──────────
+  - id: JA_KW_HATE_I_HATE_YOU
+    type: KEYWORD
+    pattern: "お前が嫌いだ"
+  - id: JA_KW_HATE_I_DESPISE_YOU
+    type: KEYWORD
+    pattern: "お前を憎む"
+  - id: JA_KW_HATE_IDIOT
+    type: KEYWORD
+    pattern: "バカ"
+  - id: JA_KW_HATE_IDIOT_KANA
+    type: KEYWORD
+    pattern: "ばか"
+  - id: JA_KW_HATE_IDIOT_KANJI
+    type: KEYWORD
+    pattern: "馬鹿"
+  - id: JA_KW_HATE_FOOL
+    type: KEYWORD
+    pattern: "アホ"
+  - id: JA_KW_HATE_TRASH
+    type: KEYWORD
+    pattern: "クズ"
+  - id: JA_KW_HATE_GET_LOST
+    type: KEYWORD
+    pattern: "うせろ"
+
+# ── Threats ───────────────────────────────────────────────────────────────────
+
+threats:
+  # English
+  - id: EN_THREAT_WILL_KILL
+    flags: CI
+    pattern: "I\\s+will\\s+(kill|murder|hurt|harm|attack|destroy)\\s+you"
+  - id: EN_THREAT_WILL_DIE
+    flags: CI
+    pattern: "you\\s+(will|are going to)\\s+(die|suffer|regret)"
+  - id: EN_THREAT_GOING_TO_KILL
+    flags: CI
+    pattern: "I('m|\\s+am)\\s+going\\s+to\\s+(kill|hurt|attack)"
+  - id: EN_THREAT_WATCH_BACK
+    flags: CI
+    pattern: "watch\\s+your\\s+back"
+  # Russian
+  - id: RU_THREAT_KILL
+    flags: U
+    pattern: "я\\s+(тебя\\s+)?(убью|уничтожу|покалечу|прибью)"
+  - id: RU_THREAT_WILL_SUFFER
+    flags: U
+    pattern: "ты\\s+(пожалеешь|умрёшь|не\\s+доживёшь)"
+  - id: RU_THREAT_WATCH
+    flags: U
+    pattern: "берегись|я\\s+до\\s+тебя\\s+доберусь"
+  # French
+  - id: FR_THREAT_KILL
+    flags: U
+    pattern: "je\\s+(vais\\s+te|te\\s+vais)\\s+(tuer|frapper|détruire|massacrer)"
+  - id: FR_THREAT_WILL_DIE
+    flags: U
+    pattern: "tu\\s+vas\\s+(mourir|le\\s+regretter|souffrir)"
+  - id: FR_THREAT_WATCH
+    flags: U
+    pattern: "fais\\s+attention\\s+à\\s+toi"
+  # German
+  - id: DE_THREAT_KILL
+    flags: U
+    pattern: "ich\\s+(werde\\s+dich|dich\\s+werde)\\s+(töten|umbringen|verletzen|vernichten)"
+  - id: DE_THREAT_WILL_DIE
+    flags: U
+    pattern: "du\\s+wirst\\s+(sterben|es\\s+bereuen|leiden)"
+  - id: DE_THREAT_WATCH
+    flags: U
+    pattern: "pass\\s+auf\\s+dich\\s+auf"
+  # Spanish
+  - id: ES_THREAT_KILL
+    flags: U
+    pattern: "te\\s+(voy\\s+a|voy\\s+a)\\s+(matar|atacar|destruir|golpear)"
+  - id: ES_THREAT_WILL_DIE
+    flags: U
+    pattern: "(vas|te\\s+vas)\\s+a\\s+(morir|arrepentir|sufrir)"
+  # Polish
+  - id: PL_THREAT_KILL
+    flags: U
+    pattern: "(zabiję|skrzywdzę|zniszczę)\\s+cię\\b"
+  - id: PL_THREAT_WILL_SUFFER
+    flags: U
+    pattern: "(pożałujesz|zginiesz|nie\\s+przeżyjesz)"
+  # Italian
+  - id: IT_THREAT_KILL
+    flags: U
+    pattern: "ti\\s+(ucciderò|ammazzerò|farò\\s+del\\s+male)"
+  - id: IT_THREAT_WILL_DIE
+    flags: U
+    pattern: "(morirai|te\\s+ne\\s+pentirai|soffrirai)"
+
+  # ── Keyword phrases (type: KEYWORD — matched by Aho-Corasick, O(n) over text) ──
+  - id: KW_KILL_YOURSELF
+    type: KEYWORD
+    pattern: "kill yourself"
+  - id: KW_DROP_DEAD
+    type: KEYWORD
+    pattern: "drop dead"
+  - id: KW_I_WISH_YOU_WERE_DEAD
+    type: KEYWORD
+    pattern: "i wish you were dead"
+  - id: KW_YOU_SHOULD_DIE
+    type: KEYWORD
+    pattern: "you should die"
+  - id: KW_GO_KILL_YOURSELF
+    type: KEYWORD
+    pattern: "go kill yourself"
+
+  # ── Japanese threats (type: KEYWORD — \b undefined for CJK) ─────────────────
+  - id: JA_KW_THREAT_ILL_KILL_YOU
+    type: KEYWORD
+    pattern: "殺してやる"
+  - id: JA_KW_THREAT_KILL_YOU_2
+    type: KEYWORD
+    pattern: "ぶっ殺す"
+  - id: JA_KW_THREAT_KILL_YOU_3
+    type: KEYWORD
+    pattern: "お前を殺す"
+  - id: JA_KW_THREAT_DIE
+    type: KEYWORD
+    pattern: "死ね"
+  - id: JA_KW_THREAT_DISAPPEAR
+    type: KEYWORD
+    pattern: "消えろ"
+  - id: JA_KW_THREAT_SHUT_UP
+    type: KEYWORD
+    pattern: "黙れ"
+
+# ── Self-Harm ─────────────────────────────────────────────────────────────────
+
+self_harm:
+  # English
+  - id: EN_SELF_HARM_HOW_TO
+    flags: CI
+    pattern: "how\\s+to\\s+(commit\\s+suicide|kill\\s+myself|end\\s+my\\s+life|self.harm)"
+  - id: EN_SELF_HARM_WANT_TO_DIE
+    flags: CI
+    pattern: "I\\s+want\\s+to\\s+(die|kill\\s+myself|end\\s+it\\s+all)"
+  # Russian
+  - id: RU_SELF_HARM_HOW_TO
+    flags: U
+    pattern: "как\\s+(покончить\\s+с\\s+собой|убить\\s+себя|совершить\\s+суицид)"
+  - id: RU_SELF_HARM_WANT_TO_DIE
+    flags: U
+    pattern: "я\\s+хочу\\s+(умереть|покончить\\s+с\\s+собой|уйти\\s+из\\s+жизни)"
+  # French
+  - id: FR_SELF_HARM_HOW_TO
+    flags: U
+    pattern: "comment\\s+(se\\s+suicider|mettre\\s+fin\\s+à\\s+ses\\s+jours|se\\s+tuer)"
+  - id: FR_SELF_HARM_WANT_TO_DIE
+    flags: U
+    pattern: "je\\s+veux\\s+(mourir|me\\s+suicider|en\\s+finir)"
+  # German
+  - id: DE_SELF_HARM_HOW_TO
+    flags: U
+    pattern: "wie\\s+(man\\s+sich\\s+umbringt|begeht\\s+man\\s+selbstmord)"
+  - id: DE_SELF_HARM_WANT_TO_DIE
+    flags: U
+    pattern: "ich\\s+will\\s+(sterben|mich\\s+umbringen|nicht\\s+mehr\\s+leben)"
+  # Spanish
+  - id: ES_SELF_HARM_HOW_TO
+    flags: U
+    pattern: "cómo\\s+(suicidarse|quitarse\\s+la\\s+vida|hacerse\\s+daño)"
+  - id: ES_SELF_HARM_WANT_TO_DIE
+    flags: U
+    pattern: "quiero\\s+(morir|suicidarme|quitarme\\s+la\\s+vida)"
+  # Polish
+  - id: PL_SELF_HARM_HOW_TO
+    flags: U
+    pattern: "jak\\s+(popełnić\\s+samobójstwo|się\\s+zabić|skończyć\\s+z\\s+życiem)"
+  - id: PL_SELF_HARM_WANT_TO_DIE
+    flags: U
+    pattern: "chcę\\s+(umrzeć|się\\s+zabić|skończyć\\s+z\\s+życiem)"
+  # Italian
+  - id: IT_SELF_HARM_HOW_TO
+    flags: U
+    pattern: "come\\s+(suicidarsi|togliersi\\s+la\\s+vita|farsi\\s+del\\s+male)"
+  - id: IT_SELF_HARM_WANT_TO_DIE
+    flags: U
+    pattern: "voglio\\s+(morire|togliermi\\s+la\\s+vita|farla\\s+finita)"
+
+# ── Third-Person Abuse ────────────────────────────────────────────────────────
+# Covers: pronoun/reference + copula + insult, dehumanising phrases,
+# and third-person death wishes across 7 languages.
+# All patterns use UC (UNICODE_CHARACTER_CLASS) so \b works correctly
+# for non-ASCII letters in Cyrillic, Latin-Extended, etc.
+# The modifier slot (?:\w+\s+){0,2} absorbs intensifiers between copula and insult.
+
+third_person_abuse:
+  # ── English ──────────────────────────────────────────────────────────────
+  - id: EN_3P_INSULT
+    flags: UC
+    pattern: "\\b(he|she|they|this\\s+person|that\\s+(?:guy|girl|man|woman|person))\\s+(?:is|are)\\s+(?:\\w+\\s+){0,2}(?:an?\\s+)?(idiots?|morons?|imbeciles?|losers?|worthless|useless|stupid|dumb|pathetic|retards?|cretins?|scumbags?|good.for.nothing)\\b"
+  - id: EN_3P_WASTE_OF_SPACE
+    flags: UC
+    pattern: "\\b(he|she|they|this\\s+person|that\\s+(?:guy|girl|man|woman|person))\\s+(?:is|are)\\s+(?:\\w+\\s+){0,2}(?:a\\s+)?waste\\s+of\\s+(?:space|time|oxygen|breath)\\b"
+  - id: EN_3P_SHOULD_DIE
+    flags: UC
+    pattern: "\\b(he|she|they|this\\s+person|that\\s+(?:guy|girl|man|woman|person))\\s+should(?:\\s+just)?\\s+(?:die|be\\s+killed|be\\s+eliminated|kill\\s+hims(?:elf|erself)|kill\\s+herself|disappear)\\b"
+  - id: EN_3P_DESERVES_TO_DIE
+    flags: UC
+    pattern: "\\b(he|she|they|this\\s+person|that\\s+(?:guy|girl|man|woman|person))\\s+deserves?\\s+to\\s+(?:die|suffer|be\\s+killed|be\\s+punished)\\b"
+  - id: EN_3P_DOESNT_DESERVE_LIVE
+    flags: UC
+    pattern: "\\b(he|she|they|this\\s+person|that\\s+(?:guy|girl|man|woman|person))\\s+(?:doesn'?t|don'?t|does\\s+not|do\\s+not)\\s+deserve\\s+to\\s+live\\b"
+  - id: EN_3P_NOT_WORTH
+    flags: UC
+    pattern: "\\b(he|she|they|this\\s+person|that\\s+(?:guy|girl|man|woman|person))\\s+(?:is|are)\\s+not\\s+worth\\s+(?:anything|a\\s+(?:thing|damn|cent))\\b"
+  # ── Russian ───────────────────────────────────────────────────────────────
+  - id: RU_3P_INSULT
+    flags: UC
+    pattern: "\\b(он|она|они|этот\\s+человек|этот\\s+тип|эта\\s+девушка|эта\\s+женщина)\\s+(?:\\w+\\s+){0,2}(идиот|дебил|тупица|придурок|кретин|мразь|урод|ничтожество|бесполезен|бесполезна|бесполезны|никчёмный|никчёмная|никчёмные)\\b"
+  - id: RU_3P_SHOULD_DIE
+    flags: UC
+    pattern: "\\b(он|она|они)\\s+(?:должен|должна|должны)\\s+(?:умереть|сдохнуть|подохнуть)\\b"
+  - id: RU_3P_DOESNT_DESERVE_LIVE
+    flags: UC
+    pattern: "\\b(он|она|они)\\s+не\\s+заслуживает\\s+(?:жить|жизни|существовать)\\b"
+  # ── French ────────────────────────────────────────────────────────────────
+  - id: FR_3P_INSULT
+    flags: UC
+    pattern: "\\b(il|elle|ils|elles|cette\\s+personne|ce\\s+(?:type|mec|gars)|cette\\s+fille)\\s+(?:est|sont)\\s+(?:\\w+\\s+){0,2}(?:un(?:e)?\\s+)?(idiot(?:e)?|imbécile|crétin(?:e)?|nul(?:le)?|inutile|pathétique|minable|bon\\s+à\\s+rien)\\b"
+  - id: FR_3P_SHOULD_DIE
+    flags: UC
+    pattern: "\\b(il|elle|ils|elles|cette\\s+personne)\\s+(?:devrait|devraient)\\s+(?:mourir|être\\s+tué(?:e)?s?|disparaître)\\b"
+  - id: FR_3P_DOESNT_DESERVE_LIVE
+    flags: UC
+    pattern: "\\b(il|elle|ils|elles)\\s+ne\\s+mérite(?:nt)?\\s+pas\\s+(?:de\\s+vivre|d.exister)\\b"
+  # ── German ────────────────────────────────────────────────────────────────
+  - id: DE_3P_INSULT
+    flags: UC
+    pattern: "\\b(er|sie|diese\\s+Person|der\\s+(?:Typ|Kerl)|die\\s+(?:Frau|Person))\\s+(?:ist|sind)\\s+(?:\\w+\\s+){0,2}(?:ein(?:e)?\\s+)?(idiot(?:in)?|trottel|vollidiot(?:in)?|blödmann|depp|dummkopf|nutzlos|wertlos|unnötig|peinlich|lebensunwert)\\b"
+  - id: DE_3P_SHOULD_DIE
+    flags: UC
+    pattern: "\\b(er|sie|diese\\s+Person)\\s+(?:sollte|sollten)\\s+(?:sterben|getötet\\s+werden|verschwinden)\\b"
+  - id: DE_3P_DESERVES_DEATH
+    flags: UC
+    pattern: "\\b(er|sie)\\s+verdient\\s+(?:es\\s+nicht\\s+zu\\s+leben|den\\s+Tod)\\b"
+  # ── Spanish ───────────────────────────────────────────────────────────────
+  - id: ES_3P_INSULT
+    flags: UC
+    pattern: "\\b(él|ella|ellos|ellas|esta\\s+persona|ese\\s+(?:tipo|chico)|esa\\s+(?:chica|mujer))\\s+(?:es|son)\\s+(?:\\w+\\s+){0,2}(?:un(?:a)?\\s+)?(idiota|imbécil|estúpido(?:a)?|inútil|patético(?:a)?|maldito(?:a)?|buen[oa]\\s+para\\s+nada)\\b"
+  - id: ES_3P_SHOULD_DIE
+    flags: UC
+    pattern: "\\b(él|ella|ellos|ellas|esta\\s+persona)\\s+(?:debería|deberían)\\s+(?:morir|desaparecer|ser\\s+eliminad[oa]s?)\\b"
+  - id: ES_3P_DOESNT_DESERVE_LIVE
+    flags: UC
+    pattern: "\\b(él|ella|ellos|ellas)\\s+no\\s+merece(?:n)?\\s+(?:vivir|existir)\\b"
+  # ── Polish ────────────────────────────────────────────────────────────────
+  - id: PL_3P_INSULT
+    flags: UC
+    pattern: "\\b(on|ona|oni|ta\\s+osoba|ten\\s+(?:facet|gość)|ta\\s+dziewczyna)\\s+(?:jest|są)\\s+(?:\\w+\\s+){0,2}(idiotą|głupcem|kretynem|debilem|beznadziejny|beznadziejna|bezużyteczny|bezużyteczna|nieudacznikiem|zerem)\\b"
+  - id: PL_3P_SHOULD_DIE
+    flags: UC
+    pattern: "\\b(on|ona|oni|ta\\s+osoba)\\s+(?:powinien|powinna|powinni)\\s+(?:umrzeć|zdechnąć|zginąć|zniknąć)\\b"
+  - id: PL_3P_DOESNT_DESERVE_LIVE
+    flags: UC
+    pattern: "\\b(on|ona|oni)\\s+nie\\s+zasługuje?\\s+na\\s+(?:życie|istnienie)\\b"
+  # ── Italian ───────────────────────────────────────────────────────────────
+  - id: IT_3P_INSULT
+    flags: UC
+    pattern: "\\b(lui|lei|loro|questa\\s+persona|quel\\s+(?:tipo|tizio)|quella\\s+(?:ragazza|donna))\\s+(?:è|sono)\\s+(?:\\w+\\s+){0,2}(?:un(?:a)?\\s+)?(idiota|cretino(?:a)?|imbecille|stupido(?:a)?|inutile|patetico(?:a)?|buono?\\s+a\\s+nulla)\\b"
+  - id: IT_3P_SHOULD_DIE
+    flags: UC
+    pattern: "\\b(lui|lei|loro|questa\\s+persona)\\s+(?:dovrebbe|dovrebbero)\\s+(?:morire|essere\\s+eliminat[oa]|sparire)\\b"
+  - id: IT_3P_DOESNT_DESERVE_LIVE
+    flags: UC
+    pattern: "\\b(lui|lei|loro)\\s+non\\s+merita(?:no)?\\s+(?:di\\s+vivere|di\\s+esistere)\\b"

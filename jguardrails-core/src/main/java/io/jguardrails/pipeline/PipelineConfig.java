@@ -5,6 +5,7 @@ import io.jguardrails.core.InputRail;
 import io.jguardrails.core.OutputRail;
 import io.jguardrails.core.RailContext;
 import io.jguardrails.metrics.GuardrailMetrics;
+import io.jguardrails.normalize.TextNormalizer;
 
 import java.util.List;
 import java.util.function.Function;
@@ -23,6 +24,7 @@ public final class PipelineConfig {
     private final GuardrailMetrics metrics;
     private final boolean failOpen;
     private final String defaultBlockedResponse;
+    private final TextNormalizer normalizer;
 
     PipelineConfig(
             List<InputRail> inputRails,
@@ -31,7 +33,8 @@ public final class PipelineConfig {
             AuditLogger auditLogger,
             GuardrailMetrics metrics,
             boolean failOpen,
-            String defaultBlockedResponse) {
+            String defaultBlockedResponse,
+            TextNormalizer normalizer) {
         this.inputRails = List.copyOf(inputRails);
         this.outputRails = List.copyOf(outputRails);
         this.blockedResponseHandler = blockedResponseHandler;
@@ -39,6 +42,7 @@ public final class PipelineConfig {
         this.metrics = metrics;
         this.failOpen = failOpen;
         this.defaultBlockedResponse = defaultBlockedResponse;
+        this.normalizer = normalizer;
     }
 
     /** @return ordered list of input rails */
@@ -78,5 +82,14 @@ public final class PipelineConfig {
     /** @return the default blocked-response message */
     public String getDefaultBlockedResponse() {
         return defaultBlockedResponse;
+    }
+
+    /**
+     * Returns the text normalizer applied once before all input rails.
+     *
+     * @return text normalizer
+     */
+    public TextNormalizer getNormalizer() {
+        return normalizer;
     }
 }

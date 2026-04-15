@@ -33,6 +33,7 @@ JGuardrails is a framework-agnostic toolkit that adds programmable safety rails 
 - [Built-in Rails](#built-in-rails)
 - [Fluent API Reference](#fluent-api-reference)
 - [YAML Configuration](#yaml-configuration)
+- [Custom Patterns and Engines](#custom-patterns-and-engines)
 - [Spring AI Integration](#spring-ai-integration)
 - [LangChain4j Integration](#langchain4j-integration)
 - [Custom Rails](#custom-rails)
@@ -40,6 +41,7 @@ JGuardrails is a framework-agnostic toolkit that adds programmable safety rails 
 - [Metrics](#metrics)
 - [Running Examples](#running-examples)
 - [Building from Source](#building-from-source)
+- [What's New in 1.0.0](#whats-new-in-100)
 
 ---
 
@@ -66,11 +68,13 @@ JGuardrails is a framework-agnostic toolkit that adds programmable safety rails 
 
 ### Known limitations
 
-- Detection is pattern-based (regex), without semantic understanding — JGuardrails is a guardrail layer, not a complete security solution.
-- Officially tuned and tested languages for jailbreak/toxicity: EN / RU / DE / FR / ES / PL / IT. Other languages may bypass detectors.
+- Detection is pattern-based (regex + Aho-Corasick), without semantic understanding — JGuardrails is a guardrail layer, not a complete security solution.
+- Officially tuned and tested languages for jailbreak/toxicity (regex): EN / RU / DE / FR / ES / PL / IT. Keyword detection also covers JA / ZH / AR / HI / TR / KO.
 - Obfuscated toxicity (full leet, heavy spacing, reversed text) and sophisticated social-engineering prompts can still pass.
 - PII patterns are intentionally conservative and may sometimes mask technical identifiers (UUIDs, ticket numbers, etc.).
 - For high-risk or regulated use cases, JGuardrails should be combined with additional LLM- or ML-based safety systems.
+
+---
 
 ## How It Works
 
@@ -115,16 +119,16 @@ Step 2 — add dependencies to `build.gradle.kts`:
 ```kotlin
 dependencies {
     // Core + built-in detectors (required)
-    implementation("com.github.Ratila1:JGuardrails:v0.1.7")
+    implementation("com.github.Ratila1:JGuardrails:v1.0.0")
 
     // Spring AI adapter (optional)
-    implementation("com.github.Ratila1.JGuardrails:jguardrails-spring-ai:v0.1.7")
+    implementation("com.github.Ratila1.JGuardrails:jguardrails-spring-ai:v1.0.0")
 
     // LangChain4j adapter (optional)
-    implementation("com.github.Ratila1.JGuardrails:jguardrails-langchain4j:v0.1.7")
+    implementation("com.github.Ratila1.JGuardrails:jguardrails-langchain4j:v1.0.0")
 
     // LLM-as-judge support (optional)
-    implementation("com.github.Ratila1.JGuardrails:jguardrails-llm:v0.1.7")
+    implementation("com.github.Ratila1.JGuardrails:jguardrails-llm:v1.0.0")
 }
 ```
 
@@ -144,7 +148,7 @@ dependencyResolutionManagement {
 ```groovy
 // build.gradle
 dependencies {
-    implementation 'com.github.Ratila1:JGuardrails:v0.1.7'
+    implementation 'com.github.Ratila1:JGuardrails:v1.0.0'
 }
 ```
 
@@ -163,17 +167,17 @@ dependencies {
     <dependency>
         <groupId>com.github.Ratila1.JGuardrails</groupId>
         <artifactId>jguardrails-core</artifactId>
-        <version>v0.1.7</version>
+        <version>v1.0.0</version>
     </dependency>
     <dependency>
         <groupId>com.github.Ratila1.JGuardrails</groupId>
         <artifactId>jguardrails-detectors</artifactId>
-        <version>v0.1.7</version>
+        <version>v1.0.0</version>
     </dependency>
 </dependencies>
 ```
 
-> **Tip:** replace `v0.1.7` with `master-SNAPSHOT` to always get the latest build from the master branch.
+> **Tip:** replace `v1.0.0` with `master-SNAPSHOT` to always get the latest build from the master branch.
 
 ### Option 2 — Build from source
 
@@ -192,8 +196,8 @@ repositories {
 }
 
 dependencies {
-    implementation("io.jguardrails:jguardrails-core:0.1.0")
-    implementation("io.jguardrails:jguardrails-detectors:0.1.0")
+    implementation("io.jguardrails:jguardrails-core:1.0.0")
+    implementation("io.jguardrails:jguardrails-detectors:1.0.0")
 }
 ```
 
@@ -233,7 +237,9 @@ String safeResponse = pipeline.execute(
 
 #### JailbreakDetector
 
-Detects prompt injection and jailbreak attempts locally using regex — no API calls required.
+Detects prompt injection and jailbreak attempts locally — no API calls required.
+
+Uses a **hybrid engine**: regex for complex structural patterns, Aho-Corasick automaton for O(n) literal phrase matching. Both engines run in parallel and the result with the earlier position in text wins.
 
 ```java
 JailbreakDetector detector = JailbreakDetector.builder()
@@ -244,9 +250,10 @@ JailbreakDetector detector = JailbreakDetector.builder()
 **What it blocks:**
 - `"Ignore previous instructions..."` / `"Forget all prior instructions..."`
 - `"You are now DAN"` / `"Act as if you are..."` / `"Pretend to be..."`
-- `"Developer mode enabled"` / `"Jailbreak mode"`
+- `"Developer mode enabled"` / `"Jailbreak mode"` / `"bypass safety filter"`
 - Delimiter injection: ` ```system``` `, `[SYSTEM]`, `<<<override>>>`
-- Patterns in English, Russian, German, French, Spanish
+- Patterns in English, Russian, German, French, Spanish, Polish, Italian
+- Literal phrases in Japanese (Aho-Corasick)
 
 ```java
 // Add your own patterns:
@@ -254,6 +261,16 @@ JailbreakDetector detector = JailbreakDetector.builder()
     .sensitivity(JailbreakDetector.Sensitivity.MEDIUM)
     .addCustomPattern("reveal.*system.*prompt")
     .addCustomPattern("bypass.*filter")
+    .build();
+
+// Load patterns from your own YAML file (replaces defaults):
+detector = JailbreakDetector.builder()
+    .patternsFromFile(myFile, "my_jailbreak_section")
+    .build();
+
+// Extend defaults with extra patterns from a YAML file:
+detector = JailbreakDetector.builder()
+    .addPatternsFromFile(myFile, "extra_jailbreak_section")
     .build();
 ```
 
@@ -328,15 +345,55 @@ InputLengthValidator validator = InputLengthValidator.builder()
 
 Blocks toxic LLM responses before they reach the user.
 
+Uses the same **hybrid engine** as `JailbreakDetector`: regex for structural patterns, Aho-Corasick for literal phrases. Multilingual keyword matching (ZH / JA / AR / HI / TR / KO) runs as a second phase via `KeywordMatcher`.
+
 ```java
 ToxicityChecker checker = ToxicityChecker.builder()
     .categories(
-        ToxicityChecker.Category.PROFANITY,    // offensive language
-        ToxicityChecker.Category.HATE_SPEECH,  // discrimination, hate speech
-        ToxicityChecker.Category.THREATS,      // threats and incitement to violence
-        ToxicityChecker.Category.SELF_HARM     // self-harm content
+        ToxicityChecker.Category.PROFANITY,         // offensive language
+        ToxicityChecker.Category.HATE_SPEECH,       // discrimination, hate speech
+        ToxicityChecker.Category.THREATS,           // threats and incitement to violence
+        ToxicityChecker.Category.SELF_HARM,         // self-harm content
+        ToxicityChecker.Category.THIRD_PERSON_ABUSE // insults / death-wishes about absent persons
     )
     .addBlockedWord("my_custom_word")
+    .build();
+```
+
+**Supported languages:**
+- Regex patterns: EN / RU / FR / DE / ES / PL / IT
+- Keyword (Aho-Corasick): EN + JA — hate phrases, threats, aggressive dismissals
+- Multilingual keyword phase: ZH / JA / AR / HI / TR / KO
+
+**`THIRD_PERSON_ABUSE`** category covers:
+- *pronoun + copula + insult*: "he is an idiot", "she is worthless"
+- *dehumanising phrases*: "waste of space", "not worth anything"
+- *third-person death wishes*: "she should die", "he doesn't deserve to live"
+
+```java
+// Disable multilingual detection (e.g., for performance):
+ToxicityChecker checker = ToxicityChecker.builder()
+    .multilingualEnabled(false)
+    .build();
+
+// Load patterns from your own YAML file:
+checker = ToxicityChecker.builder()
+    .patternsFromFile(myFile, "my_toxicity_section")
+    .build();
+
+// Extend defaults:
+checker = ToxicityChecker.builder()
+    .addPatternsFromFile(myFile, "extra_toxicity_section")
+    .build();
+
+// Replace multilingual keywords:
+checker = ToxicityChecker.builder()
+    .keywordsFromFile(myKeywordsFile)
+    .build();
+
+// Add keywords on top of defaults:
+checker = ToxicityChecker.builder()
+    .addKeywordsFromFile(myKeywordsFile)
     .build();
 ```
 
@@ -557,6 +614,7 @@ jguardrails:
           - HATE_SPEECH
           - THREATS
           - SELF_HARM
+          - THIRD_PERSON_ABUSE
 
     - type: output-pii-scan
       enabled: true
@@ -600,12 +658,148 @@ GuardrailConfig config = YamlConfigLoader.loadFromStream(inputStream);
 
 ---
 
+## Custom Patterns and Engines
+
+JGuardrails 1.0.0 exposes the full pattern-matching stack so you can extend or replace every part.
+
+### Pattern types in YAML
+
+Each entry in a pattern YAML file can declare `type: REGEX` (default) or `type: KEYWORD`:
+
+```yaml
+my_section:
+  # Regex — compiled to java.util.regex.Pattern, supports \b, lookaheads, etc.
+  - id: MY_REGEX_PATTERN
+    flags: CI
+    pattern: "ignore\\s+all\\s+instructions"
+
+  # Keyword — matched by Aho-Corasick O(n) engine, case-insensitive.
+  # Preferred for literal phrases and for CJK / Arabic / Devanagari scripts
+  # where \b word boundaries are undefined.
+  - id: MY_KEYWORD_PHRASE
+    type: KEYWORD
+    pattern: "bypass safety filter"
+```
+
+### PatternSpec and matching engines
+
+```java
+// PatternSpec carries id, category, and type (REGEX or KEYWORD):
+PatternSpec spec = new PatternSpec("MY_ID", "my_category", PatternSpec.Type.KEYWORD);
+
+// RegexPatternEngine — matches one REGEX spec against text:
+RegexPatternEngine regexEngine = RegexPatternEngine.builder()
+    .register("MY_ID", Pattern.compile("my regex", Pattern.CASE_INSENSITIVE))
+    .build();
+
+// KeywordAutomatonEngine — Aho-Corasick multi-phrase matching:
+KeywordAutomatonEngine kwEngine = new KeywordAutomatonEngine(
+    Map.of("KW_1", "bypass filter", "KW_2", "ignore instructions")
+);
+
+// CompositePatternEngine — routes each spec to the correct sub-engine by type:
+CompositePatternEngine engine = new CompositePatternEngine(regexEngine, kwEngine);
+
+// findFirst() — single call that dispatches KEYWORD specs to Aho-Corasick
+// and REGEX specs to the regex engine; returns the earliest match in text:
+Optional<MatchedSpec> hit = engine.findFirst(text, activeSpecs);
+hit.ifPresent(ms -> {
+    System.out.println("Matched id: "       + ms.spec().id());
+    System.out.println("Category:   "       + ms.spec().category());
+    System.out.println("Engine type: "      + ms.spec().type());
+    System.out.println("Matched text: "     + ms.result().matchedText());
+    System.out.println("Position: "         + ms.result().start() + "–" + ms.result().end());
+});
+```
+
+### Plug in a custom engine
+
+```java
+// Implement TextPatternEngine with your own logic (ML model, bloom filter, etc.):
+TextPatternEngine myEngine = new TextPatternEngine() {
+    @Override
+    public MatchResult find(String text, PatternSpec spec) { /* ... */ }
+};
+
+JailbreakDetector detector = JailbreakDetector.builder()
+    .engine(myEngine)
+    .build();
+```
+
+### Load patterns from a YAML file
+
+```java
+// Replace all default patterns with patterns from a file:
+JailbreakDetector detector = JailbreakDetector.builder()
+    .patternsFromFile(Path.of("my-patterns.yml"), "custom_section")
+    .build();
+
+// Add patterns on top of defaults:
+detector = JailbreakDetector.builder()
+    .addPatternsFromFile(Path.of("extra-patterns.yml"), "extra_section")
+    .build();
+
+// Same API for ToxicityChecker:
+ToxicityChecker checker = ToxicityChecker.builder()
+    .addPatternsFromFile(Path.of("extra-toxicity.yml"), "extra_threats")
+    .build();
+
+// Replace / extend multilingual keywords:
+checker = ToxicityChecker.builder()
+    .keywordsFromFile(Path.of("my-keywords.yml"))       // replace
+    .build();
+checker = ToxicityChecker.builder()
+    .addKeywordsFromFile(Path.of("extra-keywords.yml")) // extend
+    .build();
+```
+
+### PatternLoader utilities
+
+```java
+// Load specs (id + category + type) from a YAML section:
+List<PatternSpec> specs = PatternLoader.loadSpecs("my-resource.yml", "my_section");
+
+// Build engines directly:
+RegexPatternEngine    regexEngine    = PatternLoader.buildRegexEngine("my.yml", "sec1", "sec2");
+KeywordAutomatonEngine kwEngine      = PatternLoader.buildKeywordEngine("my.yml", "sec1");
+CompositePatternEngine composite     = PatternLoader.buildCompositeEngine("my.yml", "sec1", "sec2");
+
+// From filesystem path:
+RegexPatternEngine fromFile = PatternLoader.buildRegexEngineFromFile(path, "section");
+```
+
+---
+
+## Multilingual Support
+
+| Language | Code | Jailbreak | Toxicity | Engine |
+|----------|------|-----------|----------|--------|
+| English | EN | ✅ regex | ✅ regex + keywords | Regex + Aho-Corasick |
+| Russian | RU | ✅ regex | ✅ regex | Regex |
+| French | FR | ✅ regex | ✅ regex | Regex |
+| German | DE | ✅ regex | ✅ regex | Regex |
+| Spanish | ES | ✅ regex | ✅ regex | Regex |
+| Polish | PL | ✅ regex | ✅ regex | Regex |
+| Italian | IT | ✅ regex | ✅ regex | Regex |
+| Japanese | JA | ✅ keywords | ✅ keywords | Aho-Corasick |
+| Chinese | ZH | ✅ keywords | ✅ keywords | KeywordMatcher |
+| Arabic | AR | ✅ keywords | ✅ keywords | KeywordMatcher |
+| Hindi | HI | ✅ keywords | ✅ keywords | KeywordMatcher |
+| Turkish | TR | ✅ keywords | ✅ keywords | KeywordMatcher |
+| Korean | KO | ✅ keywords | ✅ keywords | KeywordMatcher |
+
+**Detection layers:**
+1. **Main engine (Aho-Corasick + Regex)** — `jailbreak-patterns.yml` / `toxicity-patterns.yml` — covers EN regex, 6 European languages regex, EN+JA keyword phrases.
+2. **Multilingual keyword phase** — `multilingual-jailbreak-keywords.yml` / `multilingual-toxicity-keywords.yml` — covers ZH / JA / AR / HI / TR / KO via `KeywordMatcher` (simple substring scan). JA appears in both layers for deeper coverage.
+
+---
+
 ## Spring AI Integration
 
 ### Dependency
 
 ```kotlin
-implementation("com.github.Ratila1.JGuardrails:jguardrails-spring-ai:v0.1.7")
+implementation("com.github.Ratila1.JGuardrails:jguardrails-spring-ai:v1.0.0")
 ```
 
 ### Option 1 — Auto-configuration (recommended)
@@ -677,7 +871,7 @@ public class ChatService {
 ### Dependency
 
 ```kotlin
-implementation("com.github.Ratila1.JGuardrails:jguardrails-langchain4j:v0.1.7")
+implementation("com.github.Ratila1.JGuardrails:jguardrails-langchain4j:v1.0.0")
 ```
 
 ### Option 1 — GuardrailChatModelFilter (transparent wrapper)
@@ -965,6 +1159,82 @@ JGuardrails/
 
 ---
 
+## What's New in 1.0.0
+
+### Aho-Corasick keyword engine (`KeywordAutomatonEngine`)
+
+A new `KeywordAutomatonEngine` implements multi-keyword matching via the Aho-Corasick automaton. All registered keywords are scanned in a single O(n + m) pass over the input text, where n = text length and m = total keyword length. This replaces the previous per-pattern regex loop for literal phrases and is particularly efficient when many keywords need to be checked simultaneously.
+
+### CompositePatternEngine — hybrid regex + Aho-Corasick
+
+`CompositePatternEngine` routes each `PatternSpec` to the correct sub-engine at `findFirst()` time based on its declared type. REGEX specs go to `RegexPatternEngine`; KEYWORD specs go to `KeywordAutomatonEngine`. Both engines run in parallel during `findFirst()` and the result with the earlier position in text wins. `JailbreakDetector` and `ToxicityChecker` both use this composite engine by default.
+
+### `PatternSpec.Type` — REGEX vs KEYWORD
+
+`PatternSpec` now carries a `Type` field (`REGEX` or `KEYWORD`). YAML entries default to `REGEX`; entries with `type: KEYWORD` are compiled as Aho-Corasick keywords rather than regex patterns.
+
+### `TextPatternEngine.findFirst()` — batch detection API
+
+`TextPatternEngine` now declares a `findFirst(String text, List<PatternSpec> specs)` default method that iterates specs and returns the first match. `KeywordAutomatonEngine` overrides it with a true single-pass Aho-Corasick scan. `CompositePatternEngine` overrides it to partition by type, run both sub-engines, and return the earliest positional match.
+
+### YAML-based pattern configuration with type support
+
+The bundled YAML files (`jailbreak-patterns.yml`, `toxicity-patterns.yml`) now support `type: KEYWORD` entries. Literal jailbreak phrases (`"bypass safety filter"`, `"developer mode enabled"`, etc.) and toxicity phrases (`"kill yourself"`, `"i hate you"`, etc.) are now KEYWORD entries matched by Aho-Corasick.
+
+### Japanese (JA) added to main pattern files
+
+Japanese jailbreak and toxicity phrases are now defined directly in `jailbreak-patterns.yml` and `toxicity-patterns.yml` as `type: KEYWORD` entries and matched by the Aho-Corasick engine — the same engine used for all literal phrase matching. Japanese also remains in the multilingual keyword files for double coverage.
+
+### `THIRD_PERSON_ABUSE` toxicity category
+
+A new `ToxicityChecker.Category.THIRD_PERSON_ABUSE` detects derogatory content about absent third parties: insults (`"he is an idiot"`), dehumanising phrases (`"waste of space"`), and death wishes (`"she should die"`). Subjects are restricted to human-referencing pronouns and references to avoid false positives on abstract narrative text. Patterns use `UNICODE_CHARACTER_CLASS` for correct `\b` handling across all 7 supported languages.
+
+### `PatternLoader` — new engine-building utilities
+
+New public methods on `PatternLoader`:
+
+| Method | Description |
+|--------|-------------|
+| `buildRegexEngine(resource, sections...)` | Build `RegexPatternEngine` from classpath YAML (skips KEYWORD entries) |
+| `buildKeywordEngine(resource, sections...)` | Build `KeywordAutomatonEngine` from classpath YAML (skips REGEX entries) |
+| `buildCompositeEngine(resource, sections...)` | Build combined `CompositePatternEngine` from classpath YAML |
+| `buildRegexEngineFromFile(path, section)` | Same, from filesystem path |
+| `buildKeywordEngineFromFile(path, section)` | Same, from filesystem path |
+| `buildCompositeEngineFromFile(path, section)` | Same, from filesystem path |
+| `loadSpecs(resource, section)` | Load `List<PatternSpec>` with type information |
+| `loadAllKeywordsFromFile(path)` | Load all keyword strings from a YAML file |
+
+### Extended Builder APIs
+
+`JailbreakDetector.Builder` and `ToxicityChecker.Builder` now expose:
+
+```java
+// Plug in a fully custom engine:
+.engine(myTextPatternEngine)
+
+// Replace defaults with patterns from a YAML file (regex + keyword):
+.patternsFromFile(path, sectionKey)
+
+// Extend defaults with extra patterns from a YAML file:
+.addPatternsFromFile(path, sectionKey)
+
+// ToxicityChecker only — replace / extend multilingual keywords:
+.keywordsFromFile(path)
+.addKeywordsFromFile(path)
+
+// ToxicityChecker only — toggle multilingual detection:
+.multilingualEnabled(boolean)
+```
+
+### Multilingual coverage expanded
+
+| Language | Before 1.0.0 | 1.0.0 |
+|----------|-------------|-------|
+| EN / RU / FR / DE / ES / PL / IT | regex | regex + Aho-Corasick (literal phrases) |
+| JA | multilingual keyword phase only | main engine (Aho-Corasick) + multilingual keyword phase |
+| ZH / AR / HI / TR / KO | multilingual keyword phase | multilingual keyword phase (unchanged) |
+
+---
 
 ## License
 

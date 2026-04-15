@@ -6,6 +6,7 @@ import io.jguardrails.core.InputRail;
 import io.jguardrails.core.OutputRail;
 import io.jguardrails.core.RailContext;
 import io.jguardrails.core.RailResult;
+import io.jguardrails.normalize.TextNormalizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -103,6 +104,12 @@ public final class GuardrailPipeline {
         Instant start = Instant.now();
         List<RailResult> railResults = new ArrayList<>();
         String currentText = input;
+
+        // Normalize once and store in context so detectors don't repeat the work.
+        // PII masking rails always receive the un-normalized currentText (original).
+        String normalizedInput = config.getNormalizer().normalize(input);
+        context.setAttribute(TextNormalizer.CONTEXT_KEY, normalizedInput);
+        log.debug("Input normalized for detection: '{}'", normalizedInput);
 
         for (InputRail rail : config.getInputRails()) {
             if (!rail.isEnabled()) {

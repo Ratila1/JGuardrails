@@ -7,6 +7,8 @@ import io.jguardrails.core.OutputRail;
 import io.jguardrails.core.RailContext;
 import io.jguardrails.metrics.DefaultMetrics;
 import io.jguardrails.metrics.GuardrailMetrics;
+import io.jguardrails.normalize.DefaultTextNormalizer;
+import io.jguardrails.normalize.TextNormalizer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,6 +40,7 @@ public final class PipelineBuilder {
     private GuardrailMetrics metrics = new DefaultMetrics();
     private boolean failOpen = false;
     private String defaultBlockedResponse = "I'm unable to process this request.";
+    private TextNormalizer normalizer = new DefaultTextNormalizer();
 
     PipelineBuilder() {}
 
@@ -173,6 +176,25 @@ public final class PipelineBuilder {
     }
 
     /**
+     * Sets a custom text normalizer applied once before all input rails.
+     *
+     * <p>The normalized text is stored in the {@link io.jguardrails.core.RailContext}
+     * under {@link io.jguardrails.normalize.TextNormalizer#CONTEXT_KEY} and consumed by
+     * detectors such as {@link io.jguardrails.detectors.input.jailbreak.JailbreakDetector}
+     * and {@link io.jguardrails.detectors.input.topic.TopicFilter}.</p>
+     *
+     * <p>Defaults to {@link DefaultTextNormalizer}. Pass {@code text -> text} to disable
+     * normalization entirely.</p>
+     *
+     * @param normalizer the normalizer to use; must not be {@code null}
+     * @return this builder
+     */
+    public PipelineBuilder normalizer(TextNormalizer normalizer) {
+        this.normalizer = Objects.requireNonNull(normalizer, "normalizer must not be null");
+        return this;
+    }
+
+    /**
      * Builds the immutable {@link GuardrailPipeline}.
      *
      * <p>Rails are sorted by their {@link io.jguardrails.core.Rail#priority()} before execution.</p>
@@ -198,7 +220,8 @@ public final class PipelineBuilder {
                 auditLogger,
                 metrics,
                 failOpen,
-                defaultBlockedResponse
+                defaultBlockedResponse,
+                normalizer
         );
 
         return new GuardrailPipeline(config);

@@ -3,6 +3,7 @@ package io.jguardrails.detectors.input.topic;
 import io.jguardrails.core.InputRail;
 import io.jguardrails.core.RailContext;
 import io.jguardrails.core.RailResult;
+import io.jguardrails.normalize.TextNormalizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,6 +13,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -233,7 +235,16 @@ public class TopicFilter implements InputRail {
     public RailResult process(String input, RailContext context) {
         Objects.requireNonNull(input, "input must not be null");
 
-        String textToCheck = caseSensitive ? input : input.toLowerCase();
+        // Prefer normalized text from pipeline context (NFKC + lowercase + leet-folded).
+        // This lets obfuscated topic keywords (e.g. "p0litics", "v!olence") be detected.
+        // When running standalone (no pipeline), fall back to simple toLowerCase.
+        String textToCheck;
+        if (!caseSensitive) {
+            textToCheck = context.getAttribute(TextNormalizer.CONTEXT_KEY, String.class)
+                    .orElseGet(() -> input.toLowerCase(Locale.ROOT));
+        } else {
+            textToCheck = input;
+        }
         Set<String> detectedTopics = new HashSet<>();
 
         for (String topic : targetTopics) {
@@ -243,7 +254,9 @@ public class TopicFilter implements InputRail {
                 continue;
             }
             for (String keyword : keywords) {
-                String kw = caseSensitive ? keyword : keyword.toLowerCase();
+                // textToCheck is already lowercased (or case-sensitive per setting),
+                // so keywords also need to match that casing.
+                String kw = caseSensitive ? keyword : keyword.toLowerCase(Locale.ROOT);
                 if (textToCheck.contains(kw)) {
                     detectedTopics.add(topic);
                     break;

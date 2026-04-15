@@ -1,73 +1,110 @@
 package io.jguardrails.detectors.input.pii;
 
+import io.jguardrails.detectors.config.PatternLoader;
+
 import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
  * Compiled regex patterns for each supported {@link PiiEntity} type.
+ *
+ * <p>Patterns are loaded at class initialisation time from the bundled classpath resource
+ * {@link PatternLoader#PII_RESOURCE} ({@code pii-patterns.yml}).</p>
+ *
+ * <h2>Design notes — why PII patterns do NOT use {@link io.jguardrails.normalize.TextNormalizer}</h2>
+ *
+ * <p>{@link io.jguardrails.normalize.DefaultTextNormalizer} is intentionally <em>not</em> applied
+ * before PII detection. Here is why:</p>
+ * <ul>
+ *   <li><strong>Symbol destruction</strong>: the normalizer maps {@code @→a} and {@code $→s}.
+ *       Email patterns depend on the literal {@code @} character; normalizing before detection
+ *       would break email matching entirely.</li>
+ *   <li><strong>Length / offset drift</strong>: leet-folding and whitespace collapse change the
+ *       length of the string. The masker replaces matched spans in the <em>original</em> text
+ *       using {@link java.util.regex.Matcher#appendReplacement}. If detection ran on a normalized
+ *       copy, the match offsets would not correspond to the original positions, making correct
+ *       replacement impossible without expensive index remapping.</li>
+ *   <li><strong>Format destruction</strong>: phone and credit-card patterns rely on specific
+ *       separator characters ({@code +-.()} and {@code -}) and digit groupings that normalization
+ *       collapses or alters.</li>
+ *   <li><strong>Predictability</strong>: PII masking is a high-stakes operation — false negatives
+ *       (missed PII) and false positives (incorrectly masked text) both have real consequences.
+ *       Keeping detection on the original, unmodified text maximises pattern precision and
+ *       makes behaviour easy to reason about and audit.</li>
+ * </ul>
+ *
+ * <p>If future requirements demand catching leet-obfuscated PII (e.g., {@code j0hn@example.com}),
+ * the recommended approach is a second detection pass on the normalised text with offset remapping,
+ * implemented as a separate, opt-in component rather than changing the default pipeline.</p>
+ *
+ * <h2>Pattern ordering</h2>
+ * <p>See {@link PiiEntity} for the rationale behind entity processing order.</p>
  */
 public final class PiiPattern {
 
     private PiiPattern() {}
 
+    // ── Patterns loaded from YAML ─────────────────────────────────────────────
+
+    private static final Map<String, Pattern> YAML =
+            PatternLoader.loadPiiPatterns(PatternLoader.PII_RESOURCE);
+
+    // ── Per-entity constants (backward-compatible public API) ─────────────────
+
     /** Email address pattern. */
-    public static final Pattern EMAIL = Pattern.compile(
-        "[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}"
-    );
+    public static final Pattern EMAIL         = YAML.get("EMAIL");
 
-    /** Phone number pattern (international and local formats).
-     *  Excludes: ISO dates (YYYY-MM-DD), IPv4 addresses, version numbers (d.d.d),
-     *  16-digit CC sequences, and matches ending before a letter (e.g. "789X"). */
-    public static final Pattern PHONE = Pattern.compile(
-        "(?<![a-zA-Z0-9])" +                          // not preceded by letter/digit (UUID, mid-number)
-        "(?!\\d{4}[\\-/.]\\d{2}[\\-/.]\\d{2})" +    // not a date
-        "(?!\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.)" +    // not an IPv4
-        "(?!\\d\\.\\d\\.\\d)" +                        // not a version number
-        "(?!(?:\\d{4}[\\s\\-]){3}\\d{4}(?!\\d))" +   // not a 16-digit CC
-        "(?:\\+?\\d[\\s\\-.]?){6,14}\\d(?![a-zA-Z])"
-    );
+    /**
+     * Credit card number pattern (Visa, MasterCard, Amex, Mir — with optional spaces/dashes).
+     *
+     * <p>Two sub-patterns combined with {@code |}:</p>
+     * <ol>
+     *   <li><strong>Full card number</strong> — BIN-prefix validated; lookbehind prevents UUID
+     *       false positives; last group {@code {3,4}} covers 15-digit Amex.</li>
+     *   <li><strong>Contextual partial card</strong> — {@code "card ending NNNN"}.</li>
+     * </ol>
+     */
+    public static final Pattern CREDIT_CARD   = YAML.get("CREDIT_CARD");
 
-    /** Credit card pattern (Visa, MasterCard, Amex, Mir — with optional spaces/dashes).
-     *  Excludes hex-dash context (e.g., last segment of a UUID). */
-    public static final Pattern CREDIT_CARD = Pattern.compile(
-        "(?<![0-9a-fA-F]-)(?:4[0-9]{3}|5[1-5][0-9]{2}|2[2-7][0-9]{2}|3[47][0-9]{2}|2200)[\\s\\-]?[0-9]{4}[\\s\\-]?[0-9]{4}[\\s\\-]?[0-9]{0,4}"
-    );
+    /** IBAN — compact and space-formatted. */
+    public static final Pattern IBAN          = YAML.get("IBAN");
 
-    /** US Social Security Number (XXX-XX-XXXX). */
-    public static final Pattern SSN = Pattern.compile(
-        "\\b(?!000|666|9\\d{2})\\d{3}[\\s\\-](?!00)\\d{2}[\\s\\-](?!0000)\\d{4}\\b"
-    );
+    /**
+     * US Social Security Number (XXX-XX-XXXX or XXX XX XXXX).
+     * Excludes invalid groups: 000, 666, 9xx (ITIN), and all-zero components.
+     */
+    public static final Pattern SSN           = YAML.get("SSN");
 
-    /** Passport numbers (simplified cross-country). */
-    public static final Pattern PASSPORT = Pattern.compile(
-        "\\b(?:[A-Z]{1,2}[\\s\\-]?\\d{6,9}|\\d{2}\\s?\\d{7})\\b"
-    );
+    /**
+     * IPv4 (strict per-octet 0–255) and IPv6 (full 8-group colon-hex).
+     * Compressed IPv6 forms (e.g. {@code ::1}) are not matched.
+     */
+    public static final Pattern IP_ADDRESS    = YAML.get("IP_ADDRESS");
 
-    /** IPv4 and IPv6 address patterns. */
-    public static final Pattern IP_ADDRESS = Pattern.compile(
-        "(?:(?:25[0-5]|2[0-4]\\d|[01]?\\d\\d?)\\.){3}(?:25[0-5]|2[0-4]\\d|[01]?\\d\\d?)" +
-        "|(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}"
-    );
+    /**
+     * Phone numbers — international and local formats, 7–15 digits.
+     * Guards against dates, IPv4 fragments, version numbers, and credit-card sequences.
+     */
+    public static final Pattern PHONE         = YAML.get("PHONE");
 
-    /** IBAN (International Bank Account Number) — compact and formatted (spaces every 4 chars). */
-    public static final Pattern IBAN = Pattern.compile(
-        "\\b[A-Z]{2}\\d{2}(?:\\s?[A-Z0-9]{4}){2,8}(?:\\s?[A-Z0-9]{1,4})?\\b"
-    );
+    /** Passport numbers — common cross-country format (1–2 letters + 6–9 digits)
+     *  and Russian internal passport (2 digits + space + 7 digits). */
+    public static final Pattern PASSPORT      = YAML.get("PASSPORT");
 
-    /** Date of birth in common formats (DD.MM.YYYY, MM/DD/YYYY, YYYY-MM-DD). */
-    public static final Pattern DATE_OF_BIRTH = Pattern.compile(
-        "\\b(?:\\d{1,2}[./\\-]\\d{1,2}[./\\-]\\d{2,4}|\\d{4}[./\\-]\\d{2}[./\\-]\\d{2})\\b"
-    );
+    /** Date of birth in common formats: DD.MM.YYYY, MM/DD/YYYY, YYYY-MM-DD. */
+    public static final Pattern DATE_OF_BIRTH = YAML.get("DATE_OF_BIRTH");
+
+    // ── Lookup map ────────────────────────────────────────────────────────────
 
     /** Lookup map from entity type to compiled pattern. */
     public static final Map<PiiEntity, Pattern> PATTERNS = Map.of(
-        PiiEntity.EMAIL, EMAIL,
-        PiiEntity.PHONE, PHONE,
-        PiiEntity.CREDIT_CARD, CREDIT_CARD,
-        PiiEntity.SSN, SSN,
-        PiiEntity.PASSPORT, PASSPORT,
-        PiiEntity.IP_ADDRESS, IP_ADDRESS,
-        PiiEntity.IBAN, IBAN,
+        PiiEntity.EMAIL,         EMAIL,
+        PiiEntity.PHONE,         PHONE,
+        PiiEntity.CREDIT_CARD,   CREDIT_CARD,
+        PiiEntity.SSN,           SSN,
+        PiiEntity.PASSPORT,      PASSPORT,
+        PiiEntity.IP_ADDRESS,    IP_ADDRESS,
+        PiiEntity.IBAN,          IBAN,
         PiiEntity.DATE_OF_BIRTH, DATE_OF_BIRTH
     );
 
@@ -76,6 +113,7 @@ public final class PiiPattern {
      *
      * @param entity PII entity type
      * @return compiled pattern
+     * @throws IllegalArgumentException if no pattern is registered for the given entity
      */
     public static Pattern forEntity(PiiEntity entity) {
         Pattern pattern = PATTERNS.get(entity);

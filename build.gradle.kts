@@ -9,7 +9,7 @@ plugins {
 
 allprojects {
     group = "io.jguardrails"
-    version = "0.1.7"
+    version = "1.0.0"
 
     repositories {
         mavenCentral()

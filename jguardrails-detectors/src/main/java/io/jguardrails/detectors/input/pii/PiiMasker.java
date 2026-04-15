@@ -15,6 +15,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HexFormat;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -31,10 +32,24 @@ import java.util.regex.Pattern;
  *   <li>{@link PiiMaskingStrategy#HASH} — replaces with SHA-256 hex hash</li>
  * </ul>
  *
+ * <h2>Why PiiMasker does NOT use {@link io.jguardrails.normalize.TextNormalizer}</h2>
+ *
+ * <p>{@code PiiMasker} always operates on the <em>original, unmodified</em> input for both
+ * detection and replacement. This is an intentional design decision — see
+ * {@link io.jguardrails.detectors.input.pii.PiiPattern} for the full rationale.
+ * In short:</p>
+ * <ul>
+ *   <li>The normalizer maps {@code @→a}, breaking email detection.</li>
+ *   <li>Leet-folding and whitespace collapse alter string length, making span-level replacement
+ *       on the original text impossible without complex index remapping.</li>
+ *   <li>Phone and credit-card patterns rely on original separators ({@code +-. ()}) that
+ *       normalization destroys.</li>
+ * </ul>
+ *
  * <p>Example usage:</p>
  * <pre>{@code
  * PiiMasker masker = PiiMasker.builder()
- *     .entities(PiiEntity.EMAIL, PiiEntity.PHONE, PiiEntity.CREDIT_CARD)
+ *     .entities(PiiEntity.EMAIL, PiiEntity.PHONE, PiiEntity.CREDIT_CARD, PiiEntity.IP_ADDRESS)
  *     .strategy(PiiMaskingStrategy.REDACT)
  *     .build();
  * }</pre>
@@ -147,7 +162,17 @@ public class PiiMasker implements InputRail {
             case CREDIT_CARD -> {
                 String digits = value.replaceAll("[^0-9]", "");
                 if (digits.length() < 4) yield "****";
-                yield "****-****-****-" + digits.substring(digits.length() - 4);
+                String last4 = digits.substring(digits.length() - 4);
+                // For contextual "card ending XXXX" matches, preserve the natural phrasing
+                if (value.toLowerCase(Locale.ROOT).startsWith("card")) {
+                    yield "card ending " + last4;
+                }
+                yield "****-****-****-" + last4;
+            }
+            case IP_ADDRESS -> {
+                // Show only the first octet for IPv4 (e.g. 192.xxx.xxx.xxx)
+                int dot = value.indexOf('.');
+                yield dot > 0 ? value.substring(0, dot) + ".xxx.xxx.xxx" : "[IP_ADDRESS REDACTED]";
             }
             default -> "[" + entity.name() + " REDACTED]";
         };
